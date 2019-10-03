@@ -26,14 +26,26 @@ template<typename R, typename D>
 void mutate_headless(
     stree::Tree& tree,
     unsigned depth,
+    float p_term,
+    float p_term_grow,
     R& prng,
-    D& value_dist,
-    float p_term = 0.2,
-    float p_term_grow = 0.2)
+    D& value_dist)
 {
-    stree::Tree chicken = grow(*tree.env(), depth, prng, p_term_grow);
+    stree::Tree chicken = grow(*tree.env(), depth, p_term_grow, prng, value_dist);
     stree::Subtree subtree = _random_subtree(tree, prng, p_term);
     subtree.replace(chicken);
+}
+
+template<typename R>
+void mutate_headless(
+    stree::Tree& tree,
+    unsigned depth,
+    float p_term,
+    float p_term_grow,
+    R& prng)
+{
+    NoValueDist value_dist;
+    mutate_headless(tree, depth, p_term, p_term_grow, prng, value_dist);
 }
 
 }

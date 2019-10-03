@@ -14,6 +14,7 @@ int main() {
     static const std::mt19937::result_type prng_seed = 1;
 
     std::mt19937 prng(prng_seed);
+    std::uniform_real_distribution<stree::Value> value_dist(-1, 1);
 
     stree::Environment env;
     env.add_function("+", 2, &func);
@@ -24,23 +25,28 @@ int main() {
     env.add_positional("b", 1);
     env.add_positional("c", 2);
 
-    Population population;
-    {
-        unsigned i = 0;
-        // grow
-        for (; i < PopulationSize / 2; ++i)
-            population.emplace_back(
-                streegp::grow(env, InitMaxDepth, prng, PTermGrow));
-        // full
-        for (; i < PopulationSize; ++i)
-            population.emplace_back(
-                streegp::full(env, InitMaxDepth, prng));
-    }
+    // Create population using generated values
+    Population population1 = ramped_half_and_half(
+        env, PopulationSize, InitMaxDepth, PTermGrow, prng, value_dist);
 
     // Print population trees
-    for (const auto indiv : population) {
+    std::cout << "Population 1, using generated values" << std::endl;
+    for (const auto indiv : population1) {
         std::cout << indiv.tree() << std::endl;
     }
+    std::cout << std::endl;
+
+
+    // Create population with no generated values
+    Population population2 = ramped_half_and_half(
+        env, PopulationSize, InitMaxDepth, PTermGrow, prng);
+
+    // Print population trees
+    std::cout << "Population 2, no generated values" << std::endl;
+    for (const auto indiv : population2) {
+        std::cout << indiv.tree() << std::endl;
+    }
+    std::cout << std::endl;
 
     return 0;
 }
