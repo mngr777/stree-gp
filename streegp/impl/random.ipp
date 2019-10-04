@@ -31,4 +31,24 @@ const stree::Symbol* random_nonterm(stree::Environment& env, R& prng) {
     return env.nonterminal(dist(prng));
 }
 
+template<typename R, typename D>
+const stree::Symbol* random_by_arity(
+    stree::Environment& env,
+    stree::Arity arity,
+    R& prng,
+    D& value_dist)
+{
+    // TODO: oprimization, refactoring
+    unsigned symbol_num = env.symbol_by_arity_num(arity);
+    assert(symbol_num > 0);
+    unsigned dist_max = (arity > 0 || std::is_same<D, NoValueDist>::value)
+        ? symbol_num - 1
+        : symbol_num;
+    UniformUnsignedDist dist(0, dist_max);
+    unsigned index = dist(prng);
+    return (index < symbol_num)
+        ? env.symbol_by_arity(arity, index)
+        : nullptr;
+}
+
 }

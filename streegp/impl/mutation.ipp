@@ -1,5 +1,9 @@
 #include <stree/stree.hpp>
 
+#include <random>
+#include <streegp/init.hpp>
+#include <streegp/random.hpp>
+
 namespace streegp {
 
 template<typename R>
@@ -41,6 +45,37 @@ stree::Tree mutate_subtree(
 {
     NoValueDist value_dist;
     return mutate_subtree(tree, depth, p_term, p_term_grow, prng, value_dist);
+}
+
+
+template<typename R, typename D>
+stree::Tree mutate_point(
+    stree::Tree tree,
+    float p_term,
+    R& prng,
+    D& value_dist)
+{
+    stree::Environment& env = *tree.env();
+    stree::Subtree subtree = _random_subtree(tree, prng, p_term);
+    const stree::Symbol* symbol = random_by_arity(
+        env, subtree.arity(), prng, value_dist);
+    if (symbol) {
+        subtree.set(symbol);
+    } else {
+        assert(subtree.arity() == 0);
+        subtree.set(value_dist(prng));
+    }
+    return tree;
+}
+
+template<typename R>
+stree::Tree mutate_point(
+    stree::Tree tree,
+    float p_term,
+    R& prng)
+{
+    NoValueDist value_dist;
+    return mutate_point(tree, p_term, prng, value_dist);
 }
 
 }

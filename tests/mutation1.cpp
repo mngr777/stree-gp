@@ -8,13 +8,19 @@
 DEFUN_EMPTY(func);
 
 int main() {
-    static const unsigned PopulationSize = 10;
-    static const unsigned InitMaxDepth = 5;
-    static const float PTermGrow = 0.2;
-    static const std::mt19937::result_type prng_seed = 1;
-    static const unsigned mutation_subtree_depth = 3;
-    static const float mutation_subtree_p_term = 0.2;
-    static const float mutation_subtree_p_term_grow = 0.2;
+    const unsigned PopulationSize = 12;
+    const unsigned InitMaxDepth = 5;
+    const float PTermGrow = 0.2;
+    const std::mt19937::result_type prng_seed = 1;
+
+    // Subtree mutation
+    const unsigned MutationSubtreeNum = PopulationSize / 3;
+    const unsigned MutationSubtreeDepth = 3;
+    const float MutationSubtreePTerm = 0.2;
+    const float MutationSubtreePTermGrow = 0.2;
+
+    const unsigned MutationPointNum = PopulationSize / 3 * 2;
+    const unsigned MutationPointPTerm = 0.2;
 
     std::mt19937 prng(prng_seed);
     std::uniform_real_distribution<stree::Value> value_dist(-1, 1);
@@ -34,22 +40,52 @@ int main() {
 
     // Create next population usin mutation only
     Population pop_next;
-    while (pop_next.size() < pop_current.size()) {
-        auto index = pop_next.size();
-        pop_next.emplace_back(
-            streegp::mutate_subtree(
-                pop_current[index].tree(),
-                mutation_subtree_depth,
-                mutation_subtree_p_term,
-                mutation_subtree_p_term_grow,
-                prng,
-                value_dist));
+    {
+        Population::size_type index = 0;
+        Population::size_type max_index = 0;
+
+        // Subtree mutation
+        max_index += MutationSubtreeNum;
+        for (; index < max_index; ++index) {
+            pop_next.emplace_back(
+                streegp::mutate_subtree(
+                    pop_current[index].tree(),
+                    MutationSubtreeDepth,
+                    MutationSubtreePTerm,
+                    MutationSubtreePTermGrow,
+                    prng,
+                    value_dist));
+
+            // Print trees
+            std::cout << "Original:          "
+                      << pop_current[index].tree()
+                      << std::endl;
+            std::cout << "Mutated (subtree): "
+                      << pop_next[index].tree()
+                      << std::endl;
+        }
+
+        // Point mutation
+        // max_index += MutationPointNum;
+        max_index = pop_current.size();
+        for (; index < max_index; ++index) {
+            pop_next.emplace_back(
+                streegp::mutate_point(
+                    pop_current[index].tree(),
+                    MutationPointPTerm,
+                    prng,
+                    value_dist));
+
+            // Print trees
+            std::cout << "Original:          "
+                      << pop_current[index].tree()
+                      << std::endl;
+            std::cout << "Mutated (point):   "
+                      << pop_next[index].tree()
+                      << std::endl;
+        }
     }
 
     assert(pop_next.size() == pop_current.size());
-    for (unsigned index = 0; index < pop_current.size(); ++index) {
-        std::cout << "Original: " << pop_current[index].tree() << std::endl;
-        std::cout << "Mutated : " << pop_next[index].tree() << std::endl;
-        std::cout << std::endl;
-    }
+    return 0;
 }

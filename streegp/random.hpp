@@ -27,6 +27,13 @@ const stree::Symbol* random_term(stree::Environment& env, R& prng, D& value_dist
 template<typename R>
 const stree::Symbol* random_nonterm(stree::Environment& env, R& prng);
 
+template<typename R, typename D>
+const stree::Symbol* random_by_arity(
+    stree::Environment& env,
+    stree::Arity arity,
+    R& prng,
+    D& value_dist);
+
 }
 
 #include "impl/random.ipp"
