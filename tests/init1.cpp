@@ -17,10 +17,10 @@ int main() {
     std::uniform_real_distribution<stree::Value> value_dist(-1, 1);
 
     stree::Environment env;
-    env.add_function("+", 2, &func);
-    env.add_function("-", 2, &func);
-    env.add_function("*", 2, &func);
-    env.add_function("%", 2, &func);
+    env.add_function("+", 2, &::func);
+    env.add_function("-", 2, &::func);
+    env.add_function("*", 2, &::func);
+    env.add_function("%", 2, &::func);
     env.add_positional("a", 0);
     env.add_positional("b", 1);
     env.add_positional("c", 2);

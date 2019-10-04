@@ -10,7 +10,7 @@ namespace streegp {
 
 template<typename R, typename D>
 stree::Tree mutate_headless(
-    stree::Tree& tree,
+    stree::Tree tree,
     unsigned depth,
     float p_term,
     float p_term_grow,
@@ -19,7 +19,7 @@ stree::Tree mutate_headless(
 
 template<typename R>
 stree::Tree mutate_headless(
-    stree::Tree& tree,
+    stree::Tree tree,
     unsigned depth,
     float p_term,
     float p_term_grow,
