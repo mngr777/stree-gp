@@ -49,11 +49,7 @@ stree::Tree mutate_subtree(
 
 
 template<typename R, typename D>
-stree::Tree mutate_point(
-    stree::Tree tree,
-    float p_term,
-    R& prng,
-    D& value_dist)
+stree::Tree mutate_point( stree::Tree tree, float p_term, R& prng, D& value_dist)
 {
     stree::Environment& env = *tree.env();
     stree::Subtree subtree = _random_subtree(tree, prng, p_term);
@@ -69,13 +65,31 @@ stree::Tree mutate_point(
 }
 
 template<typename R>
-stree::Tree mutate_point(
-    stree::Tree tree,
-    float p_term,
-    R& prng)
+stree::Tree mutate_point(stree::Tree tree, float p_term, R& prng)
 {
     NoValueDist value_dist;
     return mutate_point(tree, p_term, prng, value_dist);
+}
+
+
+template<typename R>
+stree::Tree mutate_hoist(stree::Tree tree, float p_term, R& prng) {
+    auto desc = tree.describe();
+    if (desc.nonterm_num > 1) {
+        // Get random subtree with nonterminal root (but not tree root)
+        stree::NodeNum n_max = desc.nonterm_num - 1;
+        stree::NodeFilter filter;
+        filter.is_terminal = stree::IsTerminalNo;
+        stree::Subtree subtree = tree.sub(UniformNodeNumDist{0, n_max}(prng), filter);
+        // Cut subtree, store in separate tree
+        stree::Tree slice(tree.env());
+        subtree.swap(slice.sub(0));
+        // Select random subtree in slice
+        stree::Subtree slice_subtree = _random_subtree(slice, prng, p_term);
+        // Swap with initial subtree
+        subtree.swap(slice_subtree);
+    }
+    return tree;
 }
 
 }

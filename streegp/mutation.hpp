@@ -5,6 +5,8 @@
 
 namespace streegp {
 
+// Subtree mutation
+
 template<typename R, typename D>
 stree::Tree mutate_subtree(
     stree::Tree tree,
@@ -23,18 +25,19 @@ stree::Tree mutate_subtree(
     R& prng);
 
 
+// Point mutation
+
 template<typename R, typename D>
-stree::Tree mutate_point(
-    stree::Tree tree,
-    float p_term,
-    R& prng,
-    D& value_dist);
+stree::Tree mutate_point(stree::Tree tree, float p_term, R& prng, D& value_dist);
 
 template<typename R>
-stree::Tree mutate_point(
-    stree::Tree tree,
-    float p_term,
-    R& prng);
+stree::Tree mutate_point(stree::Tree tree, float p_term, R& prng);
+
+
+// Hoist mutation
+
+template<typename R>
+stree::Tree mutate_hoist(stree::Tree tree, float p_term, R& prng);
 
 }
 

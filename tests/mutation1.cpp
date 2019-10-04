@@ -1,3 +1,4 @@
+#include <cassert>
 #include <iostream>
 #include <random>
 #include <stree/stree.hpp>
@@ -8,7 +9,7 @@
 DEFUN_EMPTY(func);
 
 int main() {
-    const unsigned PopulationSize = 12;
+    const unsigned PopulationSize = 30;
     const unsigned InitMaxDepth = 5;
     const float PTermGrow = 0.2;
     const std::mt19937::result_type prng_seed = 1;
@@ -19,8 +20,12 @@ int main() {
     const float MutationSubtreePTerm = 0.2;
     const float MutationSubtreePTermGrow = 0.2;
 
-    const unsigned MutationPointNum = PopulationSize / 3 * 2;
+    const unsigned MutationPointNum = PopulationSize / 3;
     const unsigned MutationPointPTerm = 0.2;
+
+    const unsigned MutationHoistNum = PopulationSize
+        - (MutationSubtreeNum + MutationPointNum);
+    const unsigned MutationHoistPTerm = 0.2;
 
     std::mt19937 prng(prng_seed);
     std::uniform_real_distribution<stree::Value> value_dist(-1, 1);
@@ -66,8 +71,7 @@ int main() {
         }
 
         // Point mutation
-        // max_index += MutationPointNum;
-        max_index = pop_current.size();
+        max_index += MutationPointNum;
         for (; index < max_index; ++index) {
             pop_next.emplace_back(
                 streegp::mutate_point(
@@ -81,6 +85,25 @@ int main() {
                       << pop_current[index].tree()
                       << std::endl;
             std::cout << "Mutated (point):   "
+                      << pop_next[index].tree()
+                      << std::endl;
+        }
+
+        // Hoist mutation
+        max_index += MutationHoistNum;
+        assert(max_index == pop_current.size());
+        for (; index < max_index; ++index) {
+            pop_next.emplace_back(
+                streegp::mutate_hoist(
+                    pop_current[index].tree(),
+                    MutationHoistPTerm,
+                    prng));
+
+            // Print trees
+            std::cout << "Original:          "
+                      << pop_current[index].tree()
+                      << std::endl;
+            std::cout << "Mutated (hoist):   "
                       << pop_next[index].tree()
                       << std::endl;
         }
