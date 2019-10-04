@@ -9,6 +9,7 @@
 DEFUN_EMPTY(func);
 
 int main() {
+    // Initialization
     const unsigned PopulationSize = 30;
     const unsigned InitMaxDepth = 5;
     const float PTermGrow = 0.2;
@@ -20,16 +21,20 @@ int main() {
     const float MutationSubtreePTerm = 0.2;
     const float MutationSubtreePTermGrow = 0.2;
 
+    // Point mutation
     const unsigned MutationPointNum = PopulationSize / 3;
     const unsigned MutationPointPTerm = 0.2;
 
+    // Hoist mutation
     const unsigned MutationHoistNum = PopulationSize
         - (MutationSubtreeNum + MutationPointNum);
     const unsigned MutationHoistPTerm = 0.2;
 
+    // PRNG
     std::mt19937 prng(prng_seed);
     std::uniform_real_distribution<stree::Value> value_dist(-1, 1);
 
+    // Init environment
     stree::Environment env;
     env.add_function("+", 2, &::func);
     env.add_function("-", 2, &::func);
@@ -43,7 +48,7 @@ int main() {
     Population pop_current = ramped_half_and_half(
         env, PopulationSize, InitMaxDepth, PTermGrow, prng, value_dist);
 
-    // Create next population usin mutation only
+    // Create next population using mutation only
     Population pop_next;
     {
         Population::size_type index = 0;
