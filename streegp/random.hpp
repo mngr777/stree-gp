@@ -24,6 +24,7 @@ bool _cointoss(R& prng, float p_true) {
 }
 
 // NOTE: returns nullptr if value should be generated
+// TODO: refactoring
 template<typename R, typename D>
 const stree::Symbol* random_term(stree::Environment& env, R& prng, D& value_dist) {
     unsigned term_num = env.terminal_num();
@@ -33,7 +34,7 @@ const stree::Symbol* random_term(stree::Environment& env, R& prng, D& value_dist
         : term_num;
     UniformUnsignedDist dist(0, dist_max);
     unsigned index = dist(prng);
-    return (index < dist_max)
+    return (index < term_num)
         ? env.terminal(index)
         : nullptr;
 }
