@@ -12,9 +12,9 @@ int main() {
     static const unsigned InitMaxDepth = 5;
     static const float PTermGrow = 0.2;
     static const std::mt19937::result_type prng_seed = 1;
-    static const unsigned mutation_headless_depth = 3;
-    static const float mutation_headless_p_term = 0.2;
-    static const float mutation_headless_p_term_grow = 0.2;
+    static const unsigned mutation_subtree_depth = 3;
+    static const float mutation_subtree_p_term = 0.2;
+    static const float mutation_subtree_p_term_grow = 0.2;
 
     std::mt19937 prng(prng_seed);
     std::uniform_real_distribution<stree::Value> value_dist(-1, 1);
@@ -37,11 +37,11 @@ int main() {
     while (pop_next.size() < pop_current.size()) {
         auto index = pop_next.size();
         pop_next.emplace_back(
-            streegp::mutate_headless(
+            streegp::mutate_subtree(
                 pop_current[index].tree(),
-                mutation_headless_depth,
-                mutation_headless_p_term,
-                mutation_headless_p_term_grow,
+                mutation_subtree_depth,
+                mutation_subtree_p_term,
+                mutation_subtree_p_term_grow,
                 prng,
                 value_dist));
     }

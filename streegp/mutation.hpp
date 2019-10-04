@@ -9,7 +9,7 @@
 namespace streegp {
 
 template<typename R, typename D>
-stree::Tree mutate_headless(
+stree::Tree mutate_subtree(
     stree::Tree tree,
     unsigned depth,
     float p_term,
@@ -18,7 +18,7 @@ stree::Tree mutate_headless(
     D& value_dist);
 
 template<typename R>
-stree::Tree mutate_headless(
+stree::Tree mutate_subtree(
     stree::Tree tree,
     unsigned depth,
     float p_term,
