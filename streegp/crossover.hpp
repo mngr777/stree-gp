@@ -13,10 +13,11 @@ template<typename R>
 TreeList crossover_one_point(
     stree::Tree tree1,
     stree::Tree tree2,
-    R& prng,
-    float p_term = 0.2,
-    bool *success = nullptr);
+    float p_term,
+    R& prng);
 
 }
+
+#include "impl/crossover.ipp"
 
 #endif

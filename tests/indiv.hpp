@@ -6,7 +6,6 @@
 
 class Individual;
 using Population = std::vector<Individual>;
-using Fitness = float;
 
 class Individual {
 public:
@@ -28,7 +27,7 @@ public:
         has_fitness_ = true;
     }
 
-    Fitness fitness() const {
+    streegp::Fitness fitness() const {
         return fitness_;
     }
 
@@ -38,7 +37,7 @@ public:
 
 protected:
     stree::Tree tree_;
-    Fitness fitness_;
+    streegp::Fitness fitness_;
     bool has_fitness_;
 };
 

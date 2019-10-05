@@ -4,16 +4,13 @@ namespace streegp {
 
 void _common_region_point_swap(
     stree::Environment& env, 
-    stree::CommonRegion::Item& point,
-    bool *success)
+    stree::CommonRegion::Item& point)
 {
     // Swap if not root node
     if (point.n != 0) {
         stree::Subtree subtree1(&env, nullptr, point.node1);
         stree::Subtree subtree2(&env, nullptr, point.node2);
         subtree1.swap(subtree2);
-        if (success)
-            *success = true;
     }
 }
 
@@ -21,13 +18,9 @@ template<typename R>
 TreeList crossover_one_point(
     stree::Tree tree1,
     stree::Tree tree2,
-    R& prng,
-    float p_term = 0.2,
-    bool *success = nullptr)
+    float p_term,
+    R& prng)
 {
-    if (success)
-        *success = false;
-
     stree::Environment* env = tree1.env();
     assert(tree2.env() == env);
     stree::CommonRegion common_region = stree::common_region(
@@ -46,18 +39,18 @@ TreeList crossover_one_point(
                 assert(nonterm_num > 0);
                 UniformNodeNumDist dist(0, nonterm_num - 1);
                 auto point = common_region.nth_nonterminal(dist(prng));
-                _common_region_point_swap(*env, point, success);
+                _common_region_point_swap(*env, point);
 
             } else {
                 // Crossover point is terminal
                 assert(term_num > 0);
                 UniformNodeNumDist dist(0, term_num - 1);
                 auto point = common_region.nth_terminal(dist(prng));
-                _common_region_point_swap(*env, point, success);
+                _common_region_point_swap(*env, point);
             }
         }
     }
-    return TreeList(std::move(tree1), std::move(tree2));
+    return TreeList({std::move(tree1), std::move(tree2)});
 }
 
 }
