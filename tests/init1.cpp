@@ -2,7 +2,6 @@
 #include <random>
 #include <stree/stree.hpp>
 #include <streegp/streegp.hpp>
-#include "indiv.hpp"
 #include "macros.hpp"
 
 DEFUN_EMPTY(func);
@@ -25,8 +24,11 @@ int main() {
     env.add_positional("b", 1);
     env.add_positional("c", 2);
 
+    using Individual = streegp::Individual;
+    using Population = streegp::Population<Individual>;
+
     // Create population using generated values
-    Population population1 = ramped_half_and_half(
+    Population population1 = streegp::ramped_half_and_half<Individual>(
         env, PopulationSize, InitMaxDepth, PTermGrow, prng, value_dist);
 
     // Print population trees
@@ -38,7 +40,7 @@ int main() {
 
 
     // Create population with no generated values
-    Population population2 = ramped_half_and_half(
+    Population population2 = streegp::ramped_half_and_half<Individual>(
         env, PopulationSize, InitMaxDepth, PTermGrow, prng);
 
     // Print population trees

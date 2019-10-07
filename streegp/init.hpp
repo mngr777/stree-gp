@@ -2,9 +2,28 @@
 #define STREEGP_INIT_HPP_
 
 #include <stree/stree.hpp>
+#include <streegp/individual.hpp>
 #include <streegp/random.hpp>
 
 namespace streegp {
+
+template<typename I, typename P, typename D>
+Population<I> ramped_half_and_half(
+    stree::Environment& env,
+    unsigned size,
+    unsigned max_depth,
+    float p_term_grow,
+    P& prng,
+    D& value_dist);
+
+template<typename I, typename P>
+Population<I> ramped_half_and_half(
+    stree::Environment& env,
+    unsigned size,
+    unsigned max_depth,
+    float p_term_grow,
+    P& prng);
+
 
 template<typename R, typename D>
 stree::Tree grow(

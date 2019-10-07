@@ -4,7 +4,6 @@
 #include <utility>
 #include <stree/stree.hpp>
 #include <streegp/streegp.hpp>
-#include "indiv.hpp"
 #include "macros.hpp"
 
 template<typename I>
@@ -48,7 +47,10 @@ int main() {
     env.add_function("%", 2, &::func);
     env.add_positional("a", 0);
 
-    Population pop_current = ramped_half_and_half(
+    using Individual = streegp::Individual;
+    using Population = streegp::Population<Individual>;
+
+    Population pop_current = streegp::ramped_half_and_half<Individual>(
         env, PopulationSize, InitMaxDepth, PTermGrow, prng, value_dist);
 
     Population pop_next;

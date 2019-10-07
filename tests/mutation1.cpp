@@ -3,7 +3,6 @@
 #include <random>
 #include <stree/stree.hpp>
 #include <streegp/streegp.hpp>
-#include "indiv.hpp"
 #include "macros.hpp"
 
 DEFUN_EMPTY(func);
@@ -44,12 +43,15 @@ int main() {
     env.add_positional("b", 1);
     env.add_positional("c", 2);
 
+    using Individual = streegp::Individual;
+    using Population = streegp::Population<Individual>;
+
     // Create population
-    Population pop_current = ramped_half_and_half(
+    Population pop_current = streegp::ramped_half_and_half<Individual>(
         env, PopulationSize, InitMaxDepth, PTermGrow, prng, value_dist);
 
     // Create next population using mutation only
-    Population pop_next;
+    decltype(pop_current) pop_next;
     {
         Population::size_type index = 0;
         Population::size_type max_index = 0;

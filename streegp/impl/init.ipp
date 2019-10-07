@@ -2,6 +2,43 @@
 
 namespace streegp {
 
+template<typename I, typename P, typename D>
+Population<I> ramped_half_and_half(
+    stree::Environment& env,
+    unsigned size,
+    unsigned max_depth,
+    float p_term_grow,
+    P& prng,
+    D& value_dist)
+{
+    Population<I> population;
+
+    unsigned i = 0;
+    // grow
+    for (; i < size / 2; ++i)
+        population.emplace_back(
+            streegp::grow(env, max_depth, p_term_grow, prng, value_dist));
+    // full
+    for (; i < size; ++i)
+        population.emplace_back(
+            streegp::full(env, max_depth, prng, value_dist));
+
+    return population;
+}
+
+template<typename I, typename P>
+Population<I> ramped_half_and_half(
+    stree::Environment& env,
+    unsigned size,
+    unsigned max_depth,
+    float p_term_grow,
+    P& prng)
+{
+    streegp::NoValueDist value_dist;
+    return ramped_half_and_half<I>(env, size, max_depth, p_term_grow, prng, value_dist);
+}
+
+
 void _check_environment(stree::Environment& env) {
     if (env.nonterminal_num() == 0) {
         throw std::runtime_error("Cannot generate a tree without terminals");
