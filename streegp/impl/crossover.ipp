@@ -6,18 +6,16 @@ void _common_region_point_swap(
     stree::Environment& env, 
     stree::CommonRegion::Item& point)
 {
-    // Swap if not root node
-    if (point.n != 0) {
-        stree::Subtree subtree1(&env, nullptr, point.node1);
-        stree::Subtree subtree2(&env, nullptr, point.node2);
-        subtree1.swap(subtree2);
-    }
+    stree::Subtree subtree1(&env, nullptr, point.node1);
+    // stree::Subtree subtree2(&env, nullptr, point.node2);
+    stree::Tree subtree2_copy = stree::Subtree(&env, nullptr, point.node2).copy();
+    subtree1.swap(subtree2_copy.sub(0));
 }
 
 template<typename R>
-TreeList crossover_one_point(
+stree::Tree crossover_one_point(
     stree::Tree tree1,
-    stree::Tree tree2,
+    stree::Tree& tree2,
     float p_term,
     R& prng)
 {
@@ -50,7 +48,7 @@ TreeList crossover_one_point(
             }
         }
     }
-    return TreeList({std::move(tree1), std::move(tree2)});
+    return std::move(tree1);
 }
 
 }

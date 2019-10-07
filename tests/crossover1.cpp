@@ -7,15 +7,24 @@
 #include "macros.hpp"
 
 template<typename I>
-streegp::Fitness evaluate(I& indiv) {
+streegp::Fitness evaluate(I& individual) {
     stree::Value error = 0.0;
     for (stree::Value a = -10; a <= 10; ++a) {
         stree::Params params{a};
-        stree::Value result = stree::eval(indiv.tree(), params);
+        stree::Value result = stree::eval(individual.tree(), params);
         stree::Value answer = a * a - 2 * a + 1; // a^2 - 2a + 1;
         error += std::fabs(result - answer);
     }
+    individual.set_fitness(error);
     return error;
+}
+
+template<typename I>
+streegp::Fitness get_fitness(I& individual) {
+    if (!individual.has_fitness()) {
+        evaluate(individual);
+    }
+    return individual.fitness();
 }
 
 DEFUN_EMPTY(func)
@@ -47,25 +56,27 @@ int main() {
 
     Population pop_next;
     while (pop_next.size() < pop_current.size()) {
-        Individual& parent1 = streegp::tournament(
-            pop_current, TournamentSize, &::evaluate<Individual>, prng);
-        Individual& parent2 = streegp::tournament(
-            pop_current, TournamentSize, &::evaluate<Individual>, prng);
-        streegp::TreeList children = streegp::crossover_one_point(
+        std::cout << "Tournament selection, one point crossover" << std::endl;
+        // Select parents
+        Individual& parent1 = streegp::selection_tournament(
+            pop_current, TournamentSize, prng, &::get_fitness<Individual>);
+        Individual& parent2 = streegp::selection_tournament(
+            pop_current, TournamentSize, prng, &::get_fitness<Individual>);
+        // Apply one-point crossover
+        stree::Tree child = streegp::crossover_one_point(
             parent1.tree(),
             parent2.tree(),
             CrossoverOnePointPTerm,
             prng);
 
+        // Pring parents and child
         std::cout << "Parent 1: " << parent1.tree() << std::endl;
         std::cout << "Parent 2: " << parent2.tree() << std::endl;
-        assert(children.size() == 2);
-        std::cout << "Child 1   " << children[0] << std::endl;
-        std::cout << "Child 2   " << children[1] << std::endl;
+        std::cout << "Child     " << child << std::endl;
         std::cout << std::endl;
 
-        for (auto tree : children)
-            pop_next.emplace_back(std::move(tree));
+        // Emplace child
+        pop_next.emplace_back(std::move(child));
     }
 
     return 0;

@@ -1,5 +1,6 @@
-#include <random>
 #include <cassert>
+#include <numeric>
+#include <random>
 
 namespace streegp {
 
@@ -17,24 +18,54 @@ IndividualIndexGroup random_group(const P& population, unsigned size, R& prng) {
 }
 
 template<typename I, typename R>
-I& tournament(
+I& selection_tournament(
     Population<I>& population,
     unsigned size,
-    Evaluator<I> evaluator,
-    R& prng)
+    R& prng,
+    FitnessGetter<I> get_fitness)
 {
-    assert(size > 0);
+    assert(size > 0 && population.size() >= size);
     IndividualIndexGroup group = random_group(population, size, prng);
     IndividualIndex winner_index = NoIndividualIndex;
     for (IndividualIndex index : group) {
         if (winner_index == NoIndividualIndex
-            || get_fitness(population[index], evaluator) < get_fitness(population[winner_index], evaluator))
+            || get_fitness(population[index]) < get_fitness(population[winner_index]))
         {
             winner_index = index;
         }
     }
     assert(winner_index != NoIndividualIndex);
     return population[winner_index];
+}
+
+template<typename I, typename R>
+I& selection_tournament(
+    Population<I>& population,
+    unsigned size,
+    R& prng)
+{
+    return selection_tournament(population, size, prng, get_fitness);
+}
+
+
+template<typename I, typename R>
+I& selection_fitness_proportional(Population<I>& population, R& prng) {
+    assert(population.size() > 0);
+    // Calc. fitness sum
+    Fitness total = std::accumulate(
+        population.begin(), population.end(),
+        0.0, std::plus<Fitness>());
+    // Select random fitness value
+    Fitness selected = std::uniform_real_distribution<Fitness>{0, total}(prng);
+    // Return corresponding individual
+    Fitness sum = 0.0;
+    for (I& individual : population) {
+        assert(individual.has_fitness() && "fitness not pre-calculated");
+        sum += individual.fitness();
+        if (sum >= selected)
+            return individual;
+    }
+    assert(false);
 }
 
 }
