@@ -11,6 +11,9 @@ using Fitness = float;
 template<typename I>
 using Population = std::vector<I>;
 
+using IndividualIndex = std::size_t;
+const IndividualIndex NoIndividualIndex = -1;
+
 class Individual {
 public:
     Individual(stree::Tree&& tree)

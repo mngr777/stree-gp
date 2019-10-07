@@ -5,23 +5,19 @@
 #include <functional>
 #include <random>
 #include <set>
+#include <streegp/individual.hpp>
 
 namespace streegp {
 
-using Fitness = float;
-
-using IndivIndex = std::size_t;
-using IndivIndexGroup = std::set<IndivIndex>;
-using UniformIndivIndexDist = std::uniform_int_distribution<IndivIndex>;
-
-const IndivIndex NoIndivIndex = -1;
+using IndividualIndexGroup = std::set<IndividualIndex>;
+using UniformIndividualIndexDist = std::uniform_int_distribution<IndividualIndex>;
 
 template<typename P, typename R>
-IndivIndexGroup random_group(const P& population, unsigned size, R& prng);
+IndividualIndexGroup random_group(const P& population, unsigned size, R& prng);
 
 
 template<typename P, typename R>
-IndivIndex tournament(
+IndividualIndex tournament(
     P& population,
     unsigned size,
     std::function<Fitness(typename P::value_type&)> fitness,

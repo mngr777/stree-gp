@@ -55,9 +55,9 @@ int main() {
 
     Population pop_next;
     while (pop_next.size() < pop_current.size()) {
-        streegp::IndivIndex parent1_idx = streegp::tournament(
+        streegp::IndividualIndex parent1_idx = streegp::tournament(
             pop_current, TournamentSize, &::fitness<Individual>, prng);
-        streegp::IndivIndex parent2_idx = streegp::tournament(
+        streegp::IndividualIndex parent2_idx = streegp::tournament(
             pop_current, TournamentSize, &::fitness<Individual>, prng);
         streegp::TreeList children = streegp::crossover_one_point(
             pop_current[parent1_idx].tree(),
