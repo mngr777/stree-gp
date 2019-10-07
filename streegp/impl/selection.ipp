@@ -1,4 +1,5 @@
 #include <random>
+#include <cassert>
 
 namespace streegp {
 
