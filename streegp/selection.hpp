@@ -15,12 +15,13 @@ using UniformIndividualIndexDist = std::uniform_int_distribution<IndividualIndex
 template<typename P, typename R>
 IndividualIndexGroup random_group(const P& population, unsigned size, R& prng);
 
-
-template<typename P, typename R>
-IndividualIndex tournament(
-    P& population,
+// NOTE: we may actually prefer index for comparing parents to prevent self-crossover,
+// although individuals should probably have unique IDs for tracing genealogy anyway
+template<typename I, typename R>
+I& tournament(
+    Population<I>& population,
     unsigned size,
-    std::function<Fitness(typename P::value_type&)> fitness,
+    Evaluator<I> evaluator,
     R& prng);
 
 }

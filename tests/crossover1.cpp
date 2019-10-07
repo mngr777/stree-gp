@@ -18,14 +18,6 @@ streegp::Fitness evaluate(I& indiv) {
     return error;
 }
 
-template<typename I>
-streegp::Fitness fitness(I& indiv) {
-    if (!indiv.has_fitness()) {
-        indiv.set_fitness(evaluate(indiv));
-    }
-    return indiv.fitness();
-}
-
 DEFUN_EMPTY(func)
 
 int main() {
@@ -55,18 +47,18 @@ int main() {
 
     Population pop_next;
     while (pop_next.size() < pop_current.size()) {
-        streegp::IndividualIndex parent1_idx = streegp::tournament(
-            pop_current, TournamentSize, &::fitness<Individual>, prng);
-        streegp::IndividualIndex parent2_idx = streegp::tournament(
-            pop_current, TournamentSize, &::fitness<Individual>, prng);
+        Individual& parent1 = streegp::tournament(
+            pop_current, TournamentSize, &::evaluate<Individual>, prng);
+        Individual& parent2 = streegp::tournament(
+            pop_current, TournamentSize, &::evaluate<Individual>, prng);
         streegp::TreeList children = streegp::crossover_one_point(
-            pop_current[parent1_idx].tree(),
-            pop_current[parent2_idx].tree(),
+            parent1.tree(),
+            parent2.tree(),
             CrossoverOnePointPTerm,
             prng);
 
-        std::cout << "Parent 1: " << pop_current[parent1_idx].tree() << std::endl;
-        std::cout << "Parent 2: " << pop_current[parent2_idx].tree() << std::endl;
+        std::cout << "Parent 1: " << parent1.tree() << std::endl;
+        std::cout << "Parent 2: " << parent2.tree() << std::endl;
         assert(children.size() == 2);
         std::cout << "Child 1   " << children[0] << std::endl;
         std::cout << "Child 2   " << children[1] << std::endl;

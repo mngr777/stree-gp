@@ -14,6 +14,17 @@ using Population = std::vector<I>;
 using IndividualIndex = std::size_t;
 const IndividualIndex NoIndividualIndex = -1;
 
+template<typename I>
+using Evaluator = std::function<Fitness(I&)>;
+
+template<typename I>
+Fitness get_fitness(I& individual, Evaluator<I> evaluator) {
+    if (!individual.has_fitness()) {
+        individual.set_fitness(evaluator(individual));
+    }
+    return individual.fitness();
+}
+
 class Individual {
 public:
     Individual(stree::Tree&& tree)

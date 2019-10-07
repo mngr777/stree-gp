@@ -16,11 +16,11 @@ IndividualIndexGroup random_group(const P& population, unsigned size, R& prng) {
     return group;
 }
 
-template<typename P, typename R>
-IndividualIndex tournament(
-    P& population,
+template<typename I, typename R>
+I& tournament(
+    Population<I>& population,
     unsigned size,
-    std::function<Fitness(typename P::value_type&)> fitness,
+    Evaluator<I> evaluator,
     R& prng)
 {
     assert(size > 0);
@@ -28,13 +28,13 @@ IndividualIndex tournament(
     IndividualIndex winner_index = NoIndividualIndex;
     for (IndividualIndex index : group) {
         if (winner_index == NoIndividualIndex
-            || fitness(population[index]) < fitness(population[winner_index]))
+            || get_fitness(population[index], evaluator) < get_fitness(population[winner_index], evaluator))
         {
             winner_index = index;
         }
     }
     assert(winner_index != NoIndividualIndex);
-    return winner_index;
+    return population[winner_index];
 }
 
 }
