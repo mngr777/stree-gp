@@ -19,6 +19,9 @@ public:
 template<typename R>
 bool _cointoss(R& prng, float p);
 
+template<typename R>
+stree::Subtree random_subtree(stree::Tree& tree, R& prng, float p_term);
+
 // NOTE: returns nullptr if value should be generated
 // TODO: refactoring
 template<typename R, typename D>

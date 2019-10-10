@@ -36,7 +36,14 @@ int main() {
     static const std::mt19937::result_type prng_seed = 1;
 
     static const unsigned TournamentSize = 5;
+
+    // One point crossover
+    static const unsigned CrossoverOnePointNum = 10;
     static const float CrossoverOnePointPTerm = 0.2;
+
+    // Random crossover
+    static const unsigned CrossoverRandomNum = PopulationSize - CrossoverOnePointNum;
+    static const float CrossoverRandomPTerm = 0.2;
 
     std::mt19937 prng(prng_seed);
     std::uniform_real_distribution<stree::Value> value_dist(-1, 1);
@@ -55,29 +62,68 @@ int main() {
         env, PopulationSize, InitMaxDepth, PTermGrow, prng, value_dist);
 
     Population pop_next;
-    while (pop_next.size() < pop_current.size()) {
-        std::cout << "Tournament selection, one point crossover" << std::endl;
-        // Select parents
-        Individual& parent1 = streegp::selection_tournament(
-            pop_current, TournamentSize, prng, &::get_fitness<Individual>);
-        Individual& parent2 = streegp::selection_tournament(
-            pop_current, TournamentSize, prng, &::get_fitness<Individual>);
-        // Apply one-point crossover
-        stree::Tree child = streegp::crossover_one_point(
-            parent1.tree(),
-            parent2.tree(),
-            CrossoverOnePointPTerm,
-            prng);
+    {
+        Population::size_type index = 0;
+        Population::size_type max_index = 0;
 
-        // Pring parents and child
-        std::cout << "Parent 1: " << parent1.tree() << std::endl;
-        std::cout << "Parent 2: " << parent2.tree() << std::endl;
-        std::cout << "Child     " << child << std::endl;
+        // One point crossover
+        std::cout << "Tournament selection, one point crossover" << std::endl;
+        std::cout << std::endl;
+        max_index += CrossoverOnePointNum;
+        for(; index < max_index; ++index) {
+            // Select parents
+            Individual& parent1 = streegp::selection_tournament(
+                pop_current, TournamentSize, prng, &::get_fitness<Individual>);
+            Individual& parent2 = streegp::selection_tournament(
+                pop_current, TournamentSize, prng, &::get_fitness<Individual>);
+            // Apply one-point crossover
+            stree::Tree child = streegp::crossover_one_point(
+                parent1.tree(),
+                parent2.tree(),
+                CrossoverOnePointPTerm,
+                prng);
+
+            // Pring parents and child
+            std::cout << "Parent 1: " << parent1.tree() << std::endl;
+            std::cout << "Parent 2: " << parent2.tree() << std::endl;
+            std::cout << "Child     " << child << std::endl;
+            std::cout << std::endl;
+
+            // Emplace child
+            pop_next.emplace_back(std::move(child));
+        }
+
         std::cout << std::endl;
 
-        // Emplace child
-        pop_next.emplace_back(std::move(child));
+        // Random crossover
+        std::cout << "Tournament selection, random crossover" << std::endl;
+        std::cout << std::endl;
+        max_index += CrossoverRandomNum;
+        assert(max_index == pop_current.size());
+        for(; index < max_index; ++index) {
+            // Select parents
+            Individual& parent1 = streegp::selection_tournament(
+                pop_current, TournamentSize, prng, &::get_fitness<Individual>);
+            Individual& parent2 = streegp::selection_tournament(
+                pop_current, TournamentSize, prng, &::get_fitness<Individual>);
+            // Apply one-point crossover
+            stree::Tree child = streegp::crossover_random(
+                parent1.tree(),
+                parent2.tree(),
+                CrossoverRandomPTerm,
+                prng);
+
+            // Pring parents and child
+            std::cout << "Parent 1: " << parent1.tree() << std::endl;
+            std::cout << "Parent 2: " << parent2.tree() << std::endl;
+            std::cout << "Child     " << child << std::endl;
+            std::cout << std::endl;
+
+            // Emplace child
+            pop_next.emplace_back(std::move(child));
+        }
     }
 
+    assert(pop_next.size() == pop_current.size());
     return 0;
 }

@@ -51,7 +51,7 @@ int main() {
         env, PopulationSize, InitMaxDepth, PTermGrow, prng, value_dist);
 
     // Create next population using mutation only
-    decltype(pop_current) pop_next;
+    Population pop_next;
     {
         Population::size_type index = 0;
         Population::size_type max_index = 0;

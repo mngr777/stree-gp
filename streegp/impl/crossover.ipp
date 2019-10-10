@@ -51,4 +51,19 @@ stree::Tree crossover_one_point(
     return std::move(tree1);
 }
 
+template<typename R>
+stree::Tree crossover_random(
+    stree::Tree tree1,
+    stree::Tree& tree2,
+    float p_term,
+    R& prng)
+{
+    stree::Environment* env = tree1.env();
+    assert(tree2.env() == env);
+    stree::Subtree subtree1 = random_subtree(tree1, prng, p_term);
+    stree::Subtree subtree2 = random_subtree(tree2, prng, p_term);
+    subtree1.replace(subtree2.copy());
+    return tree1;
+}
+
 }

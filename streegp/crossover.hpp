@@ -17,6 +17,13 @@ stree::Tree crossover_one_point(
     float p_term,
     R& prng);
 
+template<typename R>
+stree::Tree crossover_random(
+    stree::Tree tree1,
+    stree::Tree& tree2,
+    float p_term,
+    R& prng);
+
 }
 
 #include "impl/crossover.ipp"
