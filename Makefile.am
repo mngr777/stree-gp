@@ -3,23 +3,24 @@ ACLOCAL_AMFLAGS = -I m4
 AM_CXXFLAGS = -I $(srcdir)/streegp -Wall
 
 IMPL_FILES = \
-	impl/init.ipp \
-	impl/crossover.ipp \
-	impl/mutation.ipp \
-	impl/random.ipp \
-	imp/selection.ipp
+	streegp/impl/init.ipp \
+	streegp/impl/crossover.ipp \
+	streegp/impl/mutation.ipp \
+	streegp/impl/random.ipp \
+	streegp/impl/selection.ipp
 
 HEADER_FILES = \
-	crossover.hpp \
-	individual.hpp \
-	init.hpp \
-	mutation.hpp \
-	random.hpp \
-	selection.hpp \
-	streegp.hpp \
+	streegp/crossover.hpp \
+	streegp/individual.hpp \
+	streegp/init.hpp \
+	streegp/mutation.hpp \
+	streegp/random.hpp \
+	streegp/selection.hpp \
+	streegp/streegp.hpp \
 	$(IMPL_FILES)
-
 SOURCE_FILES = $(HEADER_FILES)
+
+include_HEADERS = $(HEADER_FILES)
 
 TESTS = test_init1 \
 	test_mutation1 \
@@ -38,4 +39,3 @@ test_mutation1_LDADD = $(TEST_LIBS)
 
 test_crossover1_SOURCES = tests/crossover1.cpp $(TEST_SOURCES) $(SOURCE_FILES)
 test_crossover1_LDADD = $(TEST_LIBS)
-
