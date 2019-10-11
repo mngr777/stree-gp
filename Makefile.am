@@ -20,7 +20,7 @@ HEADER_FILES = \
 	$(IMPL_FILES)
 SOURCE_FILES = $(HEADER_FILES)
 
-include_HEADERS = $(HEADER_FILES)
+nobase_include_HEADERS = $(HEADER_FILES)
 
 TESTS = test_init1 \
 	test_mutation1 \
