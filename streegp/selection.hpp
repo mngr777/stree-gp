@@ -7,7 +7,7 @@
 #include <set>
 #include <streegp/individual.hpp>
 
-namespace streegp {
+namespace stree { namespace gp {
 
 using IndividualIndexGroup = std::set<IndividualIndex>;
 using UniformIndividualIndexDist = std::uniform_int_distribution<IndividualIndex>;
@@ -34,7 +34,7 @@ I& selection_tournament(
 template<typename I, typename R>
 I& selection_fitness_proportional(Population<I>& population, R& prng);
 
-}
+}}
 
 #include "impl/selection.ipp"
 

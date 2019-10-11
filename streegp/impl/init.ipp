@@ -1,10 +1,10 @@
 #include <streegp/random.hpp>
 
-namespace streegp {
+namespace stree { namespace gp {
 
 template<typename I, typename P, typename D>
 Population<I> ramped_half_and_half(
-    stree::Environment& env,
+    Environment& env,
     unsigned size,
     unsigned max_depth,
     float p_term_grow,
@@ -17,29 +17,29 @@ Population<I> ramped_half_and_half(
     // grow
     for (; i < size / 2; ++i)
         population.emplace_back(
-            streegp::grow(env, max_depth, p_term_grow, prng, value_dist));
+            grow(env, max_depth, p_term_grow, prng, value_dist));
     // full
     for (; i < size; ++i)
         population.emplace_back(
-            streegp::full(env, max_depth, prng, value_dist));
+            full(env, max_depth, prng, value_dist));
 
     return population;
 }
 
 template<typename I, typename P>
 Population<I> ramped_half_and_half(
-    stree::Environment& env,
+    Environment& env,
     unsigned size,
     unsigned max_depth,
     float p_term_grow,
     P& prng)
 {
-    streegp::NoValueDist value_dist;
+    NoValueDist value_dist;
     return ramped_half_and_half<I>(env, size, max_depth, p_term_grow, prng, value_dist);
 }
 
 
-void _check_environment(stree::Environment& env) {
+void _check_environment(Environment& env) {
     if (env.nonterminal_num() == 0) {
         throw std::runtime_error("Cannot generate a tree without terminals");
     }
@@ -47,7 +47,7 @@ void _check_environment(stree::Environment& env) {
 
 template<typename R, typename D>
 void _grow(
-    stree::Builder& builder,
+    Builder& builder,
     unsigned depth,
     float p_term,
     R& prng,
@@ -57,7 +57,7 @@ void _grow(
         || (depth > 1 && !_cointoss(prng, p_term)))
     {
         // Set random nonterminal
-        const stree::Symbol* symbol = random_nonterm(builder.env(), prng);
+        const Symbol* symbol = random_nonterm(builder.env(), prng);
         assert(symbol);
         builder.set(symbol);
         // Grow argument subtrees
@@ -68,7 +68,7 @@ void _grow(
         }
     } else {
         // Set random terminal
-        const stree::Symbol* symbol = random_term(builder.env(), prng, value_dist);
+        const Symbol* symbol = random_term(builder.env(), prng, value_dist);
         if (symbol) {
             // Use terminal symbol
             builder.set(symbol);
@@ -81,7 +81,7 @@ void _grow(
 
 template<typename R, typename D>
 void _full(
-    stree::Builder& builder,
+    Builder& builder,
     unsigned depth,
     R& prng,
     D& value_dist)
@@ -89,7 +89,7 @@ void _full(
     unsigned nonterm_num = builder.env().nonterminal_num();
     if (depth > 1 && nonterm_num > 1) {
         // Set random nonterminal
-        const stree::Symbol* symbol = random_nonterm(builder.env(), prng);
+        const Symbol* symbol = random_nonterm(builder.env(), prng);
         assert(symbol);
         builder.set(symbol);
         // Build children
@@ -100,7 +100,7 @@ void _full(
         }
     } else {
         // Set random terminal
-        const stree::Symbol* symbol = random_term(builder.env(), prng, value_dist);
+        const Symbol* symbol = random_term(builder.env(), prng, value_dist);
         if (symbol) {
             // Use terminal symbol
             builder.set(symbol);
@@ -113,45 +113,45 @@ void _full(
 
 
 template<typename R, typename D>
-stree::Tree grow(
-    stree::Environment& env,
+Tree grow(
+    Environment& env,
     unsigned depth,
     float p_term,
     R& prng,
     D& value_dist)
 {
     _check_environment(env);
-    stree::Builder builder(env);
+    Builder builder(env);
     _grow(builder, depth, p_term, prng, value_dist);
     assert(builder.is_valid());
-    return stree::Tree(&builder.env(), builder.root());
+    return Tree(&builder.env(), builder.root());
 }
 
 template<typename R>
-stree::Tree grow(stree::Environment& env, unsigned depth, float p_term, R& prng) {
+Tree grow(Environment& env, unsigned depth, float p_term, R& prng) {
     NoValueDist value_dist;
     return grow(env, depth, p_term, prng, value_dist);
 }
 
 
 template<typename R, typename D>
-stree::Tree full(
-    stree::Environment& env,
+Tree full(
+    Environment& env,
     unsigned depth,
     R& prng,
     D& value_dist)
 {
     _check_environment(env);
-    stree::Builder builder(env);
+    Builder builder(env);
     _full(builder, depth, prng, value_dist);
     assert(builder.is_valid());
-    return stree::Tree(&builder.env(), builder.root());
+    return Tree(&builder.env(), builder.root());
 }
 
 template<typename R>
-stree::Tree full(stree::Environment& env, unsigned depth, R& prng) {
+Tree full(Environment& env, unsigned depth, R& prng) {
     NoValueDist value_dist;
     return full(env, depth, prng, value_dist);
 }
 
-}
+}}

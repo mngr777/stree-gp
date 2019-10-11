@@ -7,7 +7,7 @@
 #include "macros.hpp"
 
 template<typename I>
-streegp::Fitness evaluate(I& individual) {
+stree::gp::Fitness evaluate(I& individual) {
     stree::Value error = 0.0;
     for (stree::Value a = -10; a <= 10; ++a) {
         stree::Params params{a};
@@ -20,7 +20,7 @@ streegp::Fitness evaluate(I& individual) {
 }
 
 template<typename I>
-streegp::Fitness get_fitness(I& individual) {
+stree::gp::Fitness get_fitness(I& individual) {
     if (!individual.has_fitness()) {
         evaluate(individual);
     }
@@ -55,10 +55,10 @@ int main() {
     env.add_function("%", 2, &::func);
     env.add_positional("a", 0);
 
-    using Individual = streegp::Individual;
-    using Population = streegp::Population<Individual>;
+    using Individual = stree::gp::Individual;
+    using Population = stree::gp::Population<Individual>;
 
-    Population pop_current = streegp::ramped_half_and_half<Individual>(
+    Population pop_current = stree::gp::ramped_half_and_half<Individual>(
         env, PopulationSize, InitMaxDepth, PTermGrow, prng, value_dist);
 
     Population pop_next;
@@ -72,12 +72,12 @@ int main() {
         max_index += CrossoverOnePointNum;
         for(; index < max_index; ++index) {
             // Select parents
-            Individual& parent1 = streegp::selection_tournament(
+            Individual& parent1 = stree::gp::selection_tournament(
                 pop_current, TournamentSize, prng, &::get_fitness<Individual>);
-            Individual& parent2 = streegp::selection_tournament(
+            Individual& parent2 = stree::gp::selection_tournament(
                 pop_current, TournamentSize, prng, &::get_fitness<Individual>);
             // Apply one-point crossover
-            stree::Tree child = streegp::crossover_one_point(
+            stree::Tree child = stree::gp::crossover_one_point(
                 parent1.tree(),
                 parent2.tree(),
                 CrossoverOnePointPTerm,
@@ -102,12 +102,12 @@ int main() {
         assert(max_index == pop_current.size());
         for(; index < max_index; ++index) {
             // Select parents
-            Individual& parent1 = streegp::selection_tournament(
+            Individual& parent1 = stree::gp::selection_tournament(
                 pop_current, TournamentSize, prng, &::get_fitness<Individual>);
-            Individual& parent2 = streegp::selection_tournament(
+            Individual& parent2 = stree::gp::selection_tournament(
                 pop_current, TournamentSize, prng, &::get_fitness<Individual>);
             // Apply one-point crossover
-            stree::Tree child = streegp::crossover_random(
+            stree::Tree child = stree::gp::crossover_random(
                 parent1.tree(),
                 parent2.tree(),
                 CrossoverRandomPTerm,

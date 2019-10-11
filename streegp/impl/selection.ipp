@@ -2,7 +2,7 @@
 #include <numeric>
 #include <random>
 
-namespace streegp {
+namespace stree { namespace gp {
 
 template<typename P, typename R>
 IndividualIndexGroup random_group(const P& population, unsigned size, R& prng) {
@@ -68,4 +68,4 @@ I& selection_fitness_proportional(Population<I>& population, R& prng) {
     assert(false);
 }
 
-}
+}}

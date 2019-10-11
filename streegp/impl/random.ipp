@@ -2,7 +2,7 @@
 #include <type_traits>
 #include <stree/stree.hpp>
 
-namespace streegp {
+namespace stree { namespace gp {
 
 template<typename R>
 bool _cointoss(R& prng, float p) {
@@ -10,21 +10,21 @@ bool _cointoss(R& prng, float p) {
 }
 
 template<typename R>
-stree::Subtree random_subtree(stree::Tree& tree, R& prng, float p_term) {
+Subtree random_subtree(Tree& tree, R& prng, float p_term) {
     assert(tree.is_valid());
     auto desc = tree.describe();
     assert(desc.term_num > 0);
     // Choose terminal or non-terminal
     bool use_term = (desc.nonterm_num == 0) || _cointoss(prng, p_term);
-    stree::NodeNum n_max = use_term ? desc.term_num - 1 : desc.nonterm_num - 1;
+    NodeNum n_max = use_term ? desc.term_num - 1 : desc.nonterm_num - 1;
     // Select random subtree
-    stree::NodeFilter filter;
-    filter.is_terminal = use_term ? stree::IsTerminalYes : stree::IsTerminalNo;
+    NodeFilter filter;
+    filter.is_terminal = use_term ? IsTerminalYes : IsTerminalNo;
     return tree.sub(UniformNodeNumDist{0, n_max}(prng), filter);
 }
 
 template<typename R, typename D>
-const stree::Symbol* random_term(stree::Environment& env, R& prng, D& value_dist) {
+const Symbol* random_term(Environment& env, R& prng, D& value_dist) {
     unsigned term_num = env.terminal_num();
     assert(term_num > 0);
     unsigned dist_max = std::is_same<D, NoValueDist>::value
@@ -38,7 +38,7 @@ const stree::Symbol* random_term(stree::Environment& env, R& prng, D& value_dist
 }
 
 template<typename R>
-const stree::Symbol* random_nonterm(stree::Environment& env, R& prng) {
+const Symbol* random_nonterm(Environment& env, R& prng) {
     unsigned nonterm_num = env.nonterminal_num();
     assert(nonterm_num > 0);
     UniformUnsignedDist dist(0, nonterm_num - 1);
@@ -46,9 +46,9 @@ const stree::Symbol* random_nonterm(stree::Environment& env, R& prng) {
 }
 
 template<typename R, typename D>
-const stree::Symbol* random_by_arity(
-    stree::Environment& env,
-    stree::Arity arity,
+const Symbol* random_by_arity(
+    Environment& env,
+    Arity arity,
     R& prng,
     D& value_dist)
 {
@@ -65,4 +65,4 @@ const stree::Symbol* random_by_arity(
         : nullptr;
 }
 
-}
+}}

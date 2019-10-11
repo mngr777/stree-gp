@@ -24,11 +24,11 @@ int main() {
     env.add_positional("b", 1);
     env.add_positional("c", 2);
 
-    using Individual = streegp::Individual;
-    using Population = streegp::Population<Individual>;
+    using Individual = stree::gp::Individual;
+    using Population = stree::gp::Population<Individual>;
 
     // Create population using generated values
-    Population population1 = streegp::ramped_half_and_half<Individual>(
+    Population population1 = stree::gp::ramped_half_and_half<Individual>(
         env, PopulationSize, InitMaxDepth, PTermGrow, prng, value_dist);
 
     // Print population trees
@@ -40,7 +40,7 @@ int main() {
 
 
     // Create population with no generated values
-    Population population2 = streegp::ramped_half_and_half<Individual>(
+    Population population2 = stree::gp::ramped_half_and_half<Individual>(
         env, PopulationSize, InitMaxDepth, PTermGrow, prng);
 
     // Print population trees

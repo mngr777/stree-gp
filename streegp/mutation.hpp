@@ -3,13 +3,13 @@
 
 #include <stree/stree.hpp>
 
-namespace streegp {
+namespace stree { namespace gp {
 
 // Subtree mutation
 
 template<typename R, typename D>
-stree::Tree mutate_subtree(
-    stree::Tree tree,
+Tree mutate_subtree(
+    Tree tree,
     unsigned depth,
     float p_term,
     float p_term_grow,
@@ -17,8 +17,8 @@ stree::Tree mutate_subtree(
     D& value_dist);
 
 template<typename R>
-stree::Tree mutate_subtree(
-    stree::Tree tree,
+Tree mutate_subtree(
+    Tree tree,
     unsigned depth,
     float p_term,
     float p_term_grow,
@@ -28,18 +28,18 @@ stree::Tree mutate_subtree(
 // Point mutation
 
 template<typename R, typename D>
-stree::Tree mutate_point(stree::Tree tree, float p_term, R& prng, D& value_dist);
+Tree mutate_point(Tree tree, float p_term, R& prng, D& value_dist);
 
 template<typename R>
-stree::Tree mutate_point(stree::Tree tree, float p_term, R& prng);
+Tree mutate_point(Tree tree, float p_term, R& prng);
 
 
 // Hoist mutation
 
 template<typename R>
-stree::Tree mutate_hoist(stree::Tree tree, float p_term, R& prng);
+Tree mutate_hoist(Tree tree, float p_term, R& prng);
 
-}
+}}
 
 #include "impl/mutation.ipp"
 

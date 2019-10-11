@@ -5,26 +5,26 @@
 #include <stree/stree.hpp>
 #include <streegp/random.hpp>
 
-namespace streegp {
+namespace stree { namespace gp {
 
-using TreeList = std::vector<stree::Tree>;
+using TreeList = std::vector<Tree>;
 
 
 template<typename R>
-stree::Tree crossover_one_point(
-    stree::Tree tree1,
-    stree::Tree& tree2,
+Tree crossover_one_point(
+    Tree tree1,
+    Tree& tree2,
     float p_term,
     R& prng);
 
 template<typename R>
-stree::Tree crossover_random(
-    stree::Tree tree1,
-    stree::Tree& tree2,
+Tree crossover_random(
+    Tree tree1,
+    Tree& tree2,
     float p_term,
     R& prng);
 
-}
+}}
 
 #include "impl/crossover.ipp"
 

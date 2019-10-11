@@ -4,7 +4,7 @@
 #include <vector>
 #include <stree/stree.hpp>
 
-namespace streegp {
+namespace stree { namespace gp {
 
 using Fitness = float;
 
@@ -24,18 +24,18 @@ Fitness get_fitness(I& individual) {
 
 class Individual {
 public:
-    Individual(stree::Tree&& tree)
+    Individual(Tree&& tree)
         : tree_(std::move(tree)),
          fitness_(0.0),
          has_fitness_(false) {}
 
     virtual ~Individual() {}
 
-    stree::Tree& tree() {
+    Tree& tree() {
         return tree_;
     }
 
-    const stree::Tree& tree() const {
+    const Tree& tree() const {
         return tree_;
     }
 
@@ -53,11 +53,11 @@ public:
     }
 
 protected:
-    stree::Tree tree_;
+    Tree tree_;
     Fitness fitness_;
     bool has_fitness_;
 };
 
-}
+}}
 
 #endif

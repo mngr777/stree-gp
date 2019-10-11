@@ -43,11 +43,11 @@ int main() {
     env.add_positional("b", 1);
     env.add_positional("c", 2);
 
-    using Individual = streegp::Individual;
-    using Population = streegp::Population<Individual>;
+    using Individual = stree::gp::Individual;
+    using Population = stree::gp::Population<Individual>;
 
     // Create population
-    Population pop_current = streegp::ramped_half_and_half<Individual>(
+    Population pop_current = stree::gp::ramped_half_and_half<Individual>(
         env, PopulationSize, InitMaxDepth, PTermGrow, prng, value_dist);
 
     // Create next population using mutation only
@@ -60,7 +60,7 @@ int main() {
         max_index += MutationSubtreeNum;
         for (; index < max_index; ++index) {
             pop_next.emplace_back(
-                streegp::mutate_subtree(
+                stree::gp::mutate_subtree(
                     pop_current[index].tree(),
                     MutationSubtreeDepth,
                     MutationSubtreePTerm,
@@ -81,7 +81,7 @@ int main() {
         max_index += MutationPointNum;
         for (; index < max_index; ++index) {
             pop_next.emplace_back(
-                streegp::mutate_point(
+                stree::gp::mutate_point(
                     pop_current[index].tree(),
                     MutationPointPTerm,
                     prng,
@@ -101,7 +101,7 @@ int main() {
         assert(max_index == pop_current.size());
         for (; index < max_index; ++index) {
             pop_next.emplace_back(
-                streegp::mutate_hoist(
+                stree::gp::mutate_hoist(
                     pop_current[index].tree(),
                     MutationHoistPTerm,
                     prng));
