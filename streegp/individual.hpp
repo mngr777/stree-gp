@@ -1,6 +1,7 @@
 #ifndef STREEGP_INDIVIDUAL_HPP_
 #define STREEGP_INDIVIDUAL_HPP_
 
+#include <functional>
 #include <vector>
 #include <stree/stree.hpp>
 
@@ -10,6 +11,9 @@ using Fitness = float;
 
 template<typename I>
 using Population = std::vector<I>;
+
+template<typename I>
+using Group = std::vector<std::reference_wrapper<I>>;
 
 using IndividualIndex = std::size_t;
 const IndividualIndex NoIndividualIndex = -1;
@@ -29,7 +33,23 @@ public:
          fitness_(0.0),
          has_fitness_(false) {}
 
+    Individual(const Individual&) = delete;
+
+    Individual(Individual&& other)
+        : tree_(std::move(other.tree_)),
+          fitness_(other.fitness_),
+          has_fitness_(other.has_fitness_) {}
+
     virtual ~Individual() {}
+
+    Individual& operator=(const Individual&) = delete;
+
+    Individual& operator=(Individual&& other) {
+        std::swap(tree_, other.tree_);
+        fitness_ = other.fitness_;
+        has_fitness_ = other.has_fitness_;
+        return *this;
+    }
 
     Tree& tree() {
         return tree_;

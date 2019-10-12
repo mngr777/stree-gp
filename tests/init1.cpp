@@ -33,7 +33,7 @@ int main() {
 
     // Print population trees
     std::cout << "Population 1, using generated values" << std::endl;
-    for (const auto indiv : population1) {
+    for (const auto& indiv : population1) {
         std::cout << indiv.tree() << std::endl;
     }
     std::cout << std::endl;
@@ -45,7 +45,7 @@ int main() {
 
     // Print population trees
     std::cout << "Population 2, no generated values" << std::endl;
-    for (const auto indiv : population2) {
+    for (const auto& indiv : population2) {
         std::cout << indiv.tree() << std::endl;
     }
     std::cout << std::endl;

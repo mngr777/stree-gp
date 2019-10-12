@@ -22,7 +22,7 @@ I& selection_tournament(
     Population<I>& population,
     unsigned size,
     R& prng,
-    FitnessGetter<I> get_fitness);
+    const FitnessGetter<I>& get_fitness);
 
 template<typename I, typename R>
 I& selection_tournament(
