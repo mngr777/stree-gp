@@ -19,36 +19,41 @@ using IndividualIndex = std::size_t;
 const IndividualIndex NoIndividualIndex = -1;
 
 template<typename I>
-using FitnessGetter = std::function<Fitness(I&)>;
+using Evaluator = std::function<Fitness(I&)>;
 
-template<typename I>
-Fitness get_fitness(I& individual) {
-    return individual.fitness();
-}
+class Individual;
+void swap(Individual& individual1, Individual& individual2);
+
+bool more_fit(Individual& individual1, Individual& individual2);
+bool less_fit(Individual& individual1, Individual& individual2);
+
+
+// TODO: refactoring: 
 
 class Individual {
 public:
     Individual(Tree&& tree)
         : tree_(std::move(tree)),
-         fitness_(0.0),
-         has_fitness_(false) {}
+         fitness_(-1.0) {}
 
     Individual(const Individual&) = delete;
 
     Individual(Individual&& other)
         : tree_(std::move(other.tree_)),
-          fitness_(other.fitness_),
-          has_fitness_(other.has_fitness_) {}
+          fitness_(other.fitness_) {}
 
     virtual ~Individual() {}
 
     Individual& operator=(const Individual&) = delete;
 
     Individual& operator=(Individual&& other) {
-        std::swap(tree_, other.tree_);
-        fitness_ = other.fitness_;
-        has_fitness_ = other.has_fitness_;
+        swap(other);
         return *this;
+    }
+
+    void swap(Individual& other) {
+        tree_.swap(other.tree_);
+        std::swap(fitness_, other.fitness_);
     }
 
     Tree& tree() {
@@ -59,9 +64,9 @@ public:
         return tree_;
     }
 
-    void set_fitness(float fitness) {
-        fitness_ = fitness;
-        has_fitness_ = true;
+    void eval(Evaluator<Individual> evaluator, bool force = false) {
+        if (!has_fitness() || force)
+            fitness_ = evaluator(*this);
     }
 
     Fitness fitness() const {
@@ -69,14 +74,31 @@ public:
     }
 
     bool has_fitness() const {
-        return has_fitness_;
+        return !(fitness_ < 0);
+    }
+
+    virtual Fitness fitness(Evaluator<Individual> evaluator) {
+        eval(evaluator);
+        return fitness_;
     }
 
 protected:
     Tree tree_;
     Fitness fitness_;
-    bool has_fitness_;
 };
+
+
+void swap(Individual& individual1, Individual& individual2) {
+    individual1.swap(individual2);
+}
+
+bool more_fit(Individual& individual1, Individual& individual2) {
+    return individual1.fitness() < individual2.fitness();
+}
+
+bool less_fit(Individual& individual1, Individual& individual2) {
+    return individual1.fitness() > individual2.fitness();
+}
 
 }}
 

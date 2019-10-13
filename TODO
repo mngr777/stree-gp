@@ -1,4 +1,4 @@
-* fix random_term interface
-* check if it's possible to have default arguments while using value_dist overloads
 * REFACTORING
-* allow for using different fitness cases (cannot simply cache individual fitness as a number)
+* fix random_term interface
+* allow for using different fitness cases (cannot simply cache individual fitness as a number),
+  get rid of evaluator parameter if possible

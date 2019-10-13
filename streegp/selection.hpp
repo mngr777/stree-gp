@@ -22,15 +22,10 @@ I& selection_tournament(
     Population<I>& population,
     unsigned size,
     R& prng,
-    const FitnessGetter<I>& get_fitness);
-
-template<typename I, typename R>
-I& selection_tournament(
-    Population<I>& population,
-    unsigned size,
-    R& prng);
+    Evaluator<I> evaluate);
 
 
+// TODO: add evaluator parameter
 template<typename I, typename R>
 I& selection_fitness_proportional(Population<I>& population, R& prng);
 

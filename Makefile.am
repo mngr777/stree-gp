@@ -7,6 +7,7 @@ IMPL_FILES = \
 	streegp/impl/crossover.ipp \
 	streegp/impl/mutation.ipp \
 	streegp/impl/random.ipp \
+	streegp/impl/results.ipp \
 	streegp/impl/selection.ipp
 
 HEADER_FILES = \
@@ -15,6 +16,7 @@ HEADER_FILES = \
 	streegp/init.hpp \
 	streegp/mutation.hpp \
 	streegp/random.hpp \
+	streegp/results.hpp \
 	streegp/selection.hpp \
 	streegp/streegp.hpp \
 	$(IMPL_FILES)

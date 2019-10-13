@@ -15,16 +15,7 @@ stree::gp::Fitness evaluate(I& individual) {
         stree::Value answer = a * a - 2 * a + 1; // a^2 - 2a + 1;
         error += std::fabs(result - answer);
     }
-    individual.set_fitness(error);
     return error;
-}
-
-template<typename I>
-stree::gp::Fitness get_fitness(I& individual) {
-    if (!individual.has_fitness()) {
-        evaluate(individual);
-    }
-    return individual.fitness();
 }
 
 DEFUN_EMPTY(func)
@@ -73,9 +64,9 @@ int main() {
         for(; index < max_index; ++index) {
             // Select parents
             Individual& parent1 = stree::gp::selection_tournament(
-                pop_current, TournamentSize, prng, &::get_fitness<Individual>);
+                pop_current, TournamentSize, prng, evaluate<Individual>);
             Individual& parent2 = stree::gp::selection_tournament(
-                pop_current, TournamentSize, prng, &::get_fitness<Individual>);
+                pop_current, TournamentSize, prng, evaluate<Individual>);
             // Apply one-point crossover
             stree::Tree child = stree::gp::crossover_one_point(
                 parent1.tree(),
@@ -103,9 +94,9 @@ int main() {
         for(; index < max_index; ++index) {
             // Select parents
             Individual& parent1 = stree::gp::selection_tournament(
-                pop_current, TournamentSize, prng, &::get_fitness<Individual>);
+                pop_current, TournamentSize, prng, evaluate<Individual>);
             Individual& parent2 = stree::gp::selection_tournament(
-                pop_current, TournamentSize, prng, &::get_fitness<Individual>);
+                pop_current, TournamentSize, prng, evaluate<Individual>);
             // Apply one-point crossover
             stree::Tree child = stree::gp::crossover_random(
                 parent1.tree(),

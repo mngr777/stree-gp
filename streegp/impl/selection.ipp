@@ -22,14 +22,15 @@ I& selection_tournament(
     Population<I>& population,
     unsigned size,
     R& prng,
-    const FitnessGetter<I>& get_fitness)
+    Evaluator<I> evaluator)
 {
     assert(size > 0 && population.size() >= size);
     IndividualIndexGroup group = random_group(population, size, prng);
     IndividualIndex winner_index = NoIndividualIndex;
     for (IndividualIndex index : group) {
         if (winner_index == NoIndividualIndex
-            || get_fitness(population[index]) < get_fitness(population[winner_index]))
+            || (population[index].fitness(evaluator)
+                < population[winner_index].fitness(evaluator)))
         {
             winner_index = index;
         }
@@ -37,16 +38,6 @@ I& selection_tournament(
     assert(winner_index != NoIndividualIndex);
     return population[winner_index];
 }
-
-template<typename I, typename R>
-I& selection_tournament(
-    Population<I>& population,
-    unsigned size,
-    R& prng)
-{
-    return selection_tournament(population, size, prng, get_fitness);
-}
-
 
 template<typename I, typename R>
 I& selection_fitness_proportional(Population<I>& population, R& prng) {

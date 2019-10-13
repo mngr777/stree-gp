@@ -5,6 +5,7 @@
 #include <streegp/individual.hpp>
 #include <streegp/crossover.hpp>
 #include <streegp/mutation.hpp>
+#include <streegp/results.hpp>
 #include <streegp/selection.hpp>
 
 #endif
