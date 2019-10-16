@@ -41,7 +41,7 @@ Population<I> ramped_half_and_half(
 
 
 void _check_environment(Environment& env) {
-    if (env.nonterminal_num() == 0) {
+    if (env.symbols().terminals().size() == 0) {
         throw std::runtime_error("Cannot generate a tree without terminals");
     }
 }
@@ -54,11 +54,11 @@ void _grow(
     R& prng,
     D& value_dist)
 {
-    if (builder.env().nonterminal_num() == 0
+    if (builder.env().symbols().nonterminals().size() == 0
         || (depth > 1 && !_cointoss(prng, p_term)))
     {
         // Set random nonterminal
-        const Symbol* symbol = random_nonterm(builder.env(), prng);
+        const SymbolPtr symbol = random_nonterm(builder.env(), prng);
         assert(symbol);
         builder.set(symbol);
         // Grow argument subtrees
@@ -69,7 +69,7 @@ void _grow(
         }
     } else {
         // Set random terminal
-        const Symbol* symbol = random_term(builder.env(), prng, value_dist);
+        const SymbolPtr symbol = random_term(builder.env(), prng, value_dist);
         if (symbol) {
             // Use terminal symbol
             builder.set(symbol);
@@ -87,10 +87,10 @@ void _full(
     R& prng,
     D& value_dist)
 {
-    unsigned nonterm_num = builder.env().nonterminal_num();
+    unsigned nonterm_num = builder.env().symbols().nonterminals().size();
     if (depth > 1 && nonterm_num > 1) {
         // Set random nonterminal
-        const Symbol* symbol = random_nonterm(builder.env(), prng);
+        const SymbolPtr symbol = random_nonterm(builder.env(), prng);
         assert(symbol);
         builder.set(symbol);
         // Build children
@@ -101,7 +101,7 @@ void _full(
         }
     } else {
         // Set random terminal
-        const Symbol* symbol = random_term(builder.env(), prng, value_dist);
+        const SymbolPtr symbol = random_term(builder.env(), prng, value_dist);
         if (symbol) {
             // Use terminal symbol
             builder.set(symbol);

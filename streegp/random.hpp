@@ -25,13 +25,13 @@ Subtree random_subtree(Tree& tree, R& prng, float p_term);
 // NOTE: returns nullptr if value should be generated
 // TODO: refactoring
 template<typename R, typename D>
-const Symbol* random_term(Environment& env, R& prng, D& value_dist);
+const SymbolPtr random_term(Environment& env, R& prng, D& value_dist);
 
 template<typename R>
-const Symbol* random_nonterm(Environment& env, R& prng);
+const SymbolPtr random_nonterm(Environment& env, R& prng);
 
 template<typename R, typename D>
-const Symbol* random_by_arity(
+const SymbolPtr random_by_arity(
     Environment& env,
     Arity arity,
     R& prng,

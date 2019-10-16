@@ -24,8 +24,8 @@ Subtree random_subtree(Tree& tree, R& prng, float p_term) {
 }
 
 template<typename R, typename D>
-const Symbol* random_term(Environment& env, R& prng, D& value_dist) {
-    unsigned term_num = env.terminal_num();
+const SymbolPtr random_term(Environment& env, R& prng, D& value_dist) {
+    unsigned term_num = env.symbols().terminals().size();
     assert(term_num > 0);
     unsigned dist_max = std::is_same<D, NoValueDist>::value
         ? term_num - 1
@@ -33,27 +33,28 @@ const Symbol* random_term(Environment& env, R& prng, D& value_dist) {
     UniformUnsignedDist dist(0, dist_max);
     unsigned index = dist(prng);
     return (index < term_num)
-        ? env.terminal(index)
+        ? env.symbols().terminals()[index]
         : nullptr;
 }
 
 template<typename R>
-const Symbol* random_nonterm(Environment& env, R& prng) {
-    unsigned nonterm_num = env.nonterminal_num();
+const SymbolPtr random_nonterm(Environment& env, R& prng) {
+    unsigned nonterm_num = env.symbols().nonterminals().size();
     assert(nonterm_num > 0);
     UniformUnsignedDist dist(0, nonterm_num - 1);
-    return env.nonterminal(dist(prng));
+    return env.symbols().nonterminals()[dist(prng)];
 }
 
 template<typename R, typename D>
-const Symbol* random_by_arity(
+const SymbolPtr random_by_arity(
     Environment& env,
     Arity arity,
     R& prng,
     D& value_dist)
 {
     // TODO: oprimization, refactoring
-    unsigned symbol_num = env.symbol_by_arity_num(arity);
+    const SymbolPtrList& symbols = env.symbols().list_by_arity(arity);
+    auto symbol_num = symbols.size();
     assert(symbol_num > 0);
     unsigned dist_max = (arity > 0 || std::is_same<D, NoValueDist>::value)
         ? symbol_num - 1
@@ -61,8 +62,8 @@ const Symbol* random_by_arity(
     UniformUnsignedDist dist(0, dist_max);
     unsigned index = dist(prng);
     return (index < symbol_num)
-        ? env.symbol_by_arity(arity, index)
-        : nullptr;
+        ? symbols[index]
+        : SymbolPtr();
 }
 
 }}

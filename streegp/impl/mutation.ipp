@@ -39,7 +39,7 @@ Tree mutate_point( Tree tree, float p_term, R& prng, D& value_dist)
 {
     Environment& env = *tree.env();
     Subtree subtree = random_subtree(tree, prng, p_term);
-    const Symbol* symbol = random_by_arity(
+    const SymbolPtr symbol = random_by_arity(
         env, subtree.arity(), prng, value_dist);
     if (symbol) {
         subtree.set(symbol);
