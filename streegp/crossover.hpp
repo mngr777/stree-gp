@@ -17,12 +17,33 @@ Tree crossover_one_point(
     float p_term,
     R& prng);
 
+template<typename C>
+Tree crossover_one_point(
+    C& context,
+    Tree tree1,
+    Tree& tree2,
+    float p_term)
+{
+    return crossover_one_point<C::PrngType>(tree1, tree2, p_term, context.prng);
+}
+
+
 template<typename R>
 Tree crossover_random(
     Tree tree1,
     Tree& tree2,
     float p_term,
     R& prng);
+
+template<typename C>
+Tree crossover_random(
+    C& context,
+    Tree tree1,
+    Tree& tree2,
+    float p_term)
+{
+    return crossover_random<C::PrngType>(tree1, tree2, p_term, context.prng);
+}
 
 }}
 

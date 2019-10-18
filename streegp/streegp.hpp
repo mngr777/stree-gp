@@ -1,6 +1,7 @@
 #ifndef STREEGP_STREEGP_HPP_
 #define STREEGP_STREEGP_HPP_
 
+#include <streegp/context.hpp>
 #include <streegp/init.hpp>
 #include <streegp/individual.hpp>
 #include <streegp/crossover.hpp>

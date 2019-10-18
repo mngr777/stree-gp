@@ -24,10 +24,26 @@ I& selection_tournament(
     R& prng,
     Evaluator<I> evaluate);
 
+template<typename C, typename I>
+I& selection_tournament(
+    C& context,
+    Population<I>& population,
+    unsigned size,
+    Evaluator<I> evaluate)
+{
+    return selection_tournament<I, typename C::PrngType>(
+        population, size, context.prng, evaluate);
+}
 
 // TODO: add evaluator parameter
 template<typename I, typename R>
 I& selection_fitness_proportional(Population<I>& population, R& prng);
+
+template<typename C, typename I>
+I& selection_fitness_proportional(C& context, Population<I>& population) {
+    return selection_fitness_proportional<I, typename C::PrngType>(
+        population, context.prng);
+}
 
 }}
 

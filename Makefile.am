@@ -11,6 +11,7 @@ IMPL_FILES = \
 	streegp/impl/selection.ipp
 
 HEADER_FILES = \
+	streegp/context.hpp \
 	streegp/crossover.hpp \
 	streegp/individual.hpp \
 	streegp/init.hpp \
