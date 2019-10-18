@@ -1,7 +1,8 @@
-#ifndef STREEGP_CONFIG_HPP_
-#define STREEGP_CONFIG_HPP_
+#ifndef STREEGP_CONTEXT_HPP_
+#define STREEGP_CONTEXT_HPP_
 
 #include <stree/stree.hpp>
+#include <streegp/config.hpp>
 #include <streegp/random.hpp>
 
 namespace stree { namespace gp {
@@ -11,9 +12,13 @@ struct Context {
     using PrngType = R;
     using ValueDistType = D;
 
-    Context(Environment& env, R& prng, const D& value_dist)
-        : env(env), prng(prng), value_dist(value_dist) {}
+    Context(const Config& config, Environment& env, R& prng, const D& value_dist)
+        : config(config),
+          env(env),
+          prng(prng),
+          value_dist(value_dist) {}
 
+    Config config;
     Environment& env;
     R& prng;
     D value_dist;
