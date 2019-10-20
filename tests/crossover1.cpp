@@ -21,21 +21,12 @@ stree::gp::Fitness evaluate(I& individual) {
 DEFUN_EMPTY(func)
 
 int main() {
-    static const unsigned PopulationSize = 20;
-    static const unsigned InitMaxDepth = 5;
-    static const float PTermGrow = 0.2;
-    static const std::mt19937::result_type prng_seed = 1;
+    using Individual = stree::gp::Individual;
+    using Population = stree::gp::Population<Individual>;
 
-    static const unsigned TournamentSize = 5;
+    const std::mt19937::result_type prng_seed = 1;
 
-    // One point crossover
-    static const unsigned CrossoverOnePointNum = 10;
-    static const float CrossoverOnePointPTerm = 0.2;
-
-    // Random crossover
-    static const unsigned CrossoverRandomNum = PopulationSize - CrossoverOnePointNum;
-    static const float CrossoverRandomPTerm = 0.2;
-
+    // Random
     std::mt19937 prng(prng_seed);
     std::uniform_real_distribution<stree::Value> value_dist(-1, 1);
 
@@ -46,12 +37,21 @@ int main() {
     env.add_function("%", 2, &::func);
     env.add_positional("a", 0);
 
-    using Individual = stree::gp::Individual;
-    using Population = stree::gp::Population<Individual>;
+    // Context
+    auto config = stree::gp::make_config();
+    auto context = stree::gp::make_context<Individual>(
+        config,
+        env,
+        [](Individual& individual) { return 0.0; },
+        prng,
+        value_dist);
 
-    Population pop_current = stree::gp::ramped_half_and_half<Individual>(
-        env, PopulationSize, InitMaxDepth, PTermGrow, prng, value_dist);
+    unsigned PopulationSize = config.get<unsigned>(stree::gp::conf::PopulationSize);
+    unsigned CrossoverOnePointNum = 10;
+    unsigned CrossoverRandomNum = PopulationSize - CrossoverOnePointNum;
 
+    // Population
+    Population pop_current = stree::gp::ramped_half_and_half(context);
     Population pop_next;
     {
         Population::size_type index = 0;
@@ -64,15 +64,16 @@ int main() {
         for(; index < max_index; ++index) {
             // Select parents
             Individual& parent1 = stree::gp::selection_tournament(
-                pop_current, TournamentSize, prng, evaluate<Individual>);
+                context,
+                pop_current);
             Individual& parent2 = stree::gp::selection_tournament(
-                pop_current, TournamentSize, prng, evaluate<Individual>);
+                context,
+                pop_current);
             // Apply one-point crossover
             stree::Tree child = stree::gp::crossover_one_point(
+                context,
                 parent1.tree(),
-                parent2.tree(),
-                CrossoverOnePointPTerm,
-                prng);
+                parent2.tree());
 
             // Pring parents and child
             std::cout << "Parent 1: " << parent1.tree() << std::endl;
@@ -94,15 +95,16 @@ int main() {
         for(; index < max_index; ++index) {
             // Select parents
             Individual& parent1 = stree::gp::selection_tournament(
-                pop_current, TournamentSize, prng, evaluate<Individual>);
+                context,
+                pop_current);
             Individual& parent2 = stree::gp::selection_tournament(
-                pop_current, TournamentSize, prng, evaluate<Individual>);
+                context,
+                pop_current);
             // Apply one-point crossover
             stree::Tree child = stree::gp::crossover_random(
+                context,
                 parent1.tree(),
-                parent2.tree(),
-                CrossoverRandomPTerm,
-                prng);
+                parent2.tree());
 
             // Pring parents and child
             std::cout << "Parent 1: " << parent1.tree() << std::endl;

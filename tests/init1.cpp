@@ -7,11 +7,12 @@
 DEFUN_EMPTY(func);
 
 int main() {
-    static const unsigned PopulationSize = 10;
-    static const unsigned InitMaxDepth = 5;
-    static const float PTermGrow = 0.2;
-    static const std::mt19937::result_type prng_seed = 1;
+    using Individual = stree::gp::Individual;
+    using Population = stree::gp::Population<Individual>;
 
+    const std::mt19937::result_type prng_seed = 1;
+
+    // Random
     std::mt19937 prng(prng_seed);
     std::uniform_real_distribution<stree::Value> value_dist(-1, 1);
 
@@ -24,28 +25,17 @@ int main() {
     env.add_positional("b", 1);
     env.add_positional("c", 2);
 
-    using Individual = stree::gp::Individual;
-    using Population = stree::gp::Population<Individual>;
+    // Context
+    auto config = stree::gp::make_config();
+    auto context = stree::gp::make_context<Individual>(
+        config,
+        env,
+        [](Individual& individual) { return 0.0; },
+        prng,
+        value_dist);
 
-    // Create population using generated values
-    Population population1 = stree::gp::ramped_half_and_half<Individual>(
-        env, PopulationSize, InitMaxDepth, PTermGrow, prng, value_dist);
-
-    // Print population trees
-    std::cout << "Population 1, using generated values" << std::endl;
-    for (const auto& indiv : population1) {
-        std::cout << indiv.tree() << std::endl;
-    }
-    std::cout << std::endl;
-
-
-    // Create population with no generated values
-    Population population2 = stree::gp::ramped_half_and_half<Individual>(
-        env, PopulationSize, InitMaxDepth, PTermGrow, prng);
-
-    // Print population trees
-    std::cout << "Population 2, no generated values" << std::endl;
-    for (const auto& indiv : population2) {
+    Population population = stree::gp::ramped_half_and_half(context);
+    for (const auto& indiv : population) {
         std::cout << indiv.tree() << std::endl;
     }
     std::cout << std::endl;

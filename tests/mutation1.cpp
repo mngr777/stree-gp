@@ -8,28 +8,12 @@
 DEFUN_EMPTY(func);
 
 int main() {
-    // Initialization
-    const unsigned PopulationSize = 30;
-    const unsigned InitMaxDepth = 5;
-    const float PTermGrow = 0.2;
+    using Individual = stree::gp::Individual;
+    using Population = stree::gp::Population<Individual>;
+
     const std::mt19937::result_type prng_seed = 1;
 
-    // Subtree mutation
-    const unsigned MutationSubtreeNum = PopulationSize / 3;
-    const unsigned MutationSubtreeDepth = 3;
-    const float MutationSubtreePTerm = 0.2;
-    const float MutationSubtreePTermGrow = 0.2;
-
-    // Point mutation
-    const unsigned MutationPointNum = PopulationSize / 3;
-    const unsigned MutationPointPTerm = 0.2;
-
-    // Hoist mutation
-    const unsigned MutationHoistNum = PopulationSize
-        - (MutationSubtreeNum + MutationPointNum);
-    const unsigned MutationHoistPTerm = 0.2;
-
-    // PRNG
+    // Random
     std::mt19937 prng(prng_seed);
     std::uniform_real_distribution<stree::Value> value_dist(-1, 1);
 
@@ -43,12 +27,26 @@ int main() {
     env.add_positional("b", 1);
     env.add_positional("c", 2);
 
-    using Individual = stree::gp::Individual;
-    using Population = stree::gp::Population<Individual>;
+    // Context
+    auto config = stree::gp::make_config();
+    auto context = stree::gp::make_context<Individual>(
+        config,
+        env,
+        [](Individual& individual) { return 0.0; },
+        prng,
+        value_dist);
+
+    unsigned PopulationSize = config.get<unsigned>(stree::gp::conf::PopulationSize);
+    // Subtree mutation
+    unsigned MutationSubtreeNum = PopulationSize / 3;
+    // Point mutation
+    unsigned MutationPointNum = PopulationSize / 3;
+    // Hoist mutation
+    unsigned MutationHoistNum = PopulationSize
+        - (MutationSubtreeNum + MutationPointNum);
 
     // Create population
-    Population pop_current = stree::gp::ramped_half_and_half<Individual>(
-        env, PopulationSize, InitMaxDepth, PTermGrow, prng, value_dist);
+    Population pop_current = stree::gp::ramped_half_and_half(context);
 
     // Create next population using mutation only
     Population pop_next;
@@ -61,12 +59,8 @@ int main() {
         for (; index < max_index; ++index) {
             pop_next.emplace_back(
                 stree::gp::mutate_subtree(
-                    pop_current[index].tree(),
-                    MutationSubtreeDepth,
-                    MutationSubtreePTerm,
-                    MutationSubtreePTermGrow,
-                    prng,
-                    value_dist));
+                    context,
+                    pop_current[index].tree()));
 
             // Print trees
             std::cout << "Original:          "
@@ -82,10 +76,8 @@ int main() {
         for (; index < max_index; ++index) {
             pop_next.emplace_back(
                 stree::gp::mutate_point(
-                    pop_current[index].tree(),
-                    MutationPointPTerm,
-                    prng,
-                    value_dist));
+                    context,
+                    pop_current[index].tree()));
 
             // Print trees
             std::cout << "Original:          "
@@ -102,9 +94,8 @@ int main() {
         for (; index < max_index; ++index) {
             pop_next.emplace_back(
                 stree::gp::mutate_hoist(
-                    pop_current[index].tree(),
-                    MutationHoistPTerm,
-                    prng));
+                    context,
+                    pop_current[index].tree()));
 
             // Print trees
             std::cout << "Original:          "

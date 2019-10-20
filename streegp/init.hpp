@@ -2,6 +2,8 @@
 #define STREEGP_INIT_HPP_
 
 #include <stree/stree.hpp>
+#include <streegp/config.hpp>
+#include <streegp/context.hpp>
 #include <streegp/individual.hpp>
 #include <streegp/random.hpp>
 
@@ -24,20 +26,30 @@ Population<I> ramped_half_and_half(
     float p_term_grow,
     P& prng);
 
-template<typename I, typename C>
-Population<I> ramped_half_and_half(
+template<typename C>
+Population<typename C::IndividualType> ramped_half_and_half(
     C& context,
     unsigned size,
     unsigned max_depth,
     float p_term_grow)
 {
-    ramped_half_and_half<I, typename C::PrngType, typename C::ValueDistType>(
+    return ramped_half_and_half<typename C::IndividualType, typename C::PrngType, typename C::ValueDistType>(
         context.env,
         size,
         max_depth,
         p_term_grow,
         context.prng,
         context.value_dist);
+}
+
+template<typename C>
+Population<typename C::IndividualType> ramped_half_and_half(C& context) {
+    const Config& config = context.config;
+    return ramped_half_and_half<C>(
+        context,
+        config.get<unsigned>(conf::PopulationSize),
+        config.get<unsigned>(conf::InitRampedMaxDepth),
+        config.get<float>(conf::InitRampedPTermGrow));
 }
 
 
@@ -58,6 +70,15 @@ Tree grow(C& context, unsigned depth, float p_term) {
         context.env, depth, p_term, context.prng, context.value_dist);
 }
 
+template<typename C>
+Tree grow(C& context) {
+    const Config& config = context.config;
+    return grow<C>(
+        context,
+        config.get<unsigned>(conf::InitGrowMaxDepth),
+        config.get<float>(conf::InitGrowPTerm));
+}
+
 
 template<typename R, typename D>
 Tree full(
@@ -73,6 +94,14 @@ template<typename C>
 Tree full(C& context, unsigned depth) {
     return full<typename C::PrngType, typename C::ValueDistType>(
         context.env, depth, context.prng, context.value_dist);
+}
+
+template<typename C>
+Tree full(C& context) {
+    const Config& config = context.config;
+    return full<C>(
+        context,
+        config.get<unsigned>(conf::InitFullMaxDepth));
 }
 
 }}
