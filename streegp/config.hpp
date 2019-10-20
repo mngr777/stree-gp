@@ -2,6 +2,7 @@
 #define STREEGP_CONFIG_HPP_
 
 #include <cassert>
+#include <cstdint>
 #include <map>
 #include <ostream>
 #include <stdexcept>
@@ -20,7 +21,7 @@ const char PTermDefault[]             = "p_term_default";
 
 /// Initialization
 const char InitMaxDepthDefault[]      = "init.max_depth_default";
-const char InitPTermDefault[]         = "init.max_depth_default";
+const char InitPTermDefault[]         = "init.p_term_default";
 // ramped_half_and_half
 const char InitRampedMaxDepth[]       = "init.ramped.depth";
 const char InitRampedPTermGrow[]      = "init.ramped.p_term_grow";
@@ -65,12 +66,21 @@ class Config {
     using ValueMap = std::map<const std::string, V>;
 
 public:
+    using PrintFlag = std::uint8_t;
+    const static PrintFlag NoPrintFlags  = 0;
+    const static PrintFlag PrintDefault  = 1;
+    const static PrintFlag PrintActual   = 2;
+
     Config()
         : order_(0),
-          order_step_(5) {}
+          order_step_(5),
+          print_flags_(NoPrintFlags) {}
 
     // NOTE: no circularity check
+    template<typename V>
     void add_fallback(const std::string& name, const std::string& fallback_name) {
+        // TODO: check fallback type
+        add_or_update_field(name, get_type<V>(), 0);
         fallback_map_[name] = fallback_name;
     }
 
@@ -90,16 +100,13 @@ public:
 
     void print(std::ostream& os, const std::string& name) const {
         Field field = get_field(name);
-        std::string actual;
         switch (field.type) {
             case TypeUnsigned: {
-                unsigned value = get<unsigned>(name, actual);
-                os << value;
+                print_field<unsigned>(os, name);
                 break;
             }
             case TypeFloat: {
-                float value = get<float>(name, actual);
-                os << value;
+                print_field<float>(os, name);
                 break;
             }
             default: assert(false);
@@ -108,20 +115,7 @@ public:
 
     template<typename V>
     void set(const std::string& name, V value, unsigned order = 0) {
-        // Add/update field
-        if (field_map_.count(name) == 0) {
-            // add field
-            Field field(name, get_type<V>(), (order > 0 ? order : order_next()));
-            field_map_.emplace(name, field);
-        } else {
-            // update field
-            Field& field = field_map_.at(name);
-            if (field.type != get_type<V>())
-                throw std::invalid_argument("Field type doesn't match");
-            if (order != 0)
-                field.order = order;
-        }
-        // Set value
+        add_or_update_field(name, get_type<V>(), order);
         get_map<V>()[name] = value;
     }
 
@@ -135,6 +129,18 @@ public:
 
     void set_order_step(unsigned order_step) {
         order_step_ = order_step;
+    }
+
+    void set_print_flag(PrintFlag flag) {
+        print_flags_ |= flag;
+    }
+
+    void unset_print_flag(PrintFlag flag) {
+        print_flags_ &= ~flag;
+    }
+
+    bool has_flag(PrintFlag flag) const {
+        return print_flags_ & flag;
     }
 
 private:
@@ -158,6 +164,19 @@ private:
     };
 
     template<typename V>
+    void print_field(std::ostream& os, const std::string& name) const {
+        std::string actual;
+        V value = get<V>(name, actual);
+        if (has_flag(PrintDefault) || actual.empty()) {
+            // print name
+            os << name << " = " << value;
+            if (has_flag(PrintActual) && !actual.empty())
+                os << " # " << actual;
+            os << std::endl;
+        }
+    }
+
+    template<typename V>
     Type get_type() {
         if (std::is_same<V,unsigned>::value) {
             return TypeUnsigned;
@@ -167,6 +186,21 @@ private:
             throw std::invalid_argument("Invalid field type");
         }
         assert(false);
+    }
+
+    void add_or_update_field(const std::string name, Type type, unsigned order) {
+        if (field_map_.count(name) == 0) {
+            // add field
+            Field field(name, type, (order > 0 ? order : order_next()));
+            field_map_.emplace(name, field);
+        } else {
+            // update field
+            Field& field = field_map_.at(name);
+            if (field.type != type)
+                throw std::invalid_argument("Field type doesn't match");
+            if (order != 0)
+                field.order = order;
+        }
     }
 
     Field get_field(const std::string& name) const {
@@ -202,6 +236,7 @@ private:
 
     unsigned order_;
     unsigned order_step_;
+    PrintFlag print_flags_;
     std::map<const std::string, Field> field_map_;
     ValueMap<unsigned> map_unsigned_;
     ValueMap<float> map_float_;

@@ -1,5 +1,6 @@
 namespace stree { namespace gp {
 
+// TODO: use sections
 std::ostream& operator<<(std::ostream& os, const stree::gp::Config& config) {
     // Get fields
     std::vector<stree::gp::Config::Field> fields;
@@ -13,9 +14,7 @@ std::ostream& operator<<(std::ostream& os, const stree::gp::Config& config) {
 
     // Print field names and values
     for (const auto& field : fields) {
-        os << field.name << " = ";
         config.print(os, field.name);
-        os << std::endl;
     }
     return os;
 }
@@ -55,15 +54,15 @@ Config make_config() {
     /// Initialization
     config.set_order(100);
     config.set<unsigned>(InitMaxDepthDefault, 5);
-    config.add_fallback(InitPTermDefault, PTermDefault);
+    config.add_fallback<float>(InitPTermDefault, PTermDefault);
     // ramped_half_and_half
-    config.add_fallback(InitRampedMaxDepth, InitMaxDepthDefault);
-    config.add_fallback(InitRampedPTermGrow, InitPTermDefault);
+    config.add_fallback<unsigned>(InitRampedMaxDepth, InitMaxDepthDefault);
+    config.add_fallback<float>(InitRampedPTermGrow, InitPTermDefault);
     // grow
-    config.add_fallback(InitGrowMaxDepth, InitMaxDepthDefault);
-    config.add_fallback(InitGrowPTerm, InitPTermDefault);
+    config.add_fallback<unsigned>(InitGrowMaxDepth, InitMaxDepthDefault);
+    config.add_fallback<float>(InitGrowPTerm, InitPTermDefault);
     // full
-    config.add_fallback(InitFullMaxDepth, InitMaxDepthDefault);
+    config.add_fallback<unsigned>(InitFullMaxDepth, InitMaxDepthDefault);
 
 
     /// Selection
@@ -72,24 +71,24 @@ Config make_config() {
 
     /// Mutation
     config.set_order(300);
-    config.add_fallback(MutationPTermDefault, PTermDefault);
-    config.add_fallback(MutationPTermGrowDefault, PTermDefault);
+    config.add_fallback<float>(MutationPTermDefault, PTermDefault);
+    config.add_fallback<float>(MutationPTermGrowDefault, PTermDefault);
     // subtree
     config.set<unsigned>(MutationSubtreeDepth, 5);
-    config.add_fallback(MutationSubtreePTerm, MutationPTermDefault);
-    config.add_fallback(MutationSubtreePTermGrow, MutationPTermDefault);
+    config.add_fallback<float>(MutationSubtreePTerm, MutationPTermDefault);
+    config.add_fallback<float>(MutationSubtreePTermGrow, MutationPTermDefault);
     // point
-    config.add_fallback(MutationPointPTerm, MutationPTermDefault);
+    config.add_fallback<float>(MutationPointPTerm, MutationPTermDefault);
     // hoist
-    config.add_fallback(MutationHoistPTerm, MutationPTermDefault);
+    config.add_fallback<float>(MutationHoistPTerm, MutationPTermDefault);
 
     /// Crossover
     config.set_order(400);
-    config.add_fallback(CrossoverPTermDefault, PTermDefault);
+    config.add_fallback<float>(CrossoverPTermDefault, PTermDefault);
     // one point
-    config.add_fallback(CrossoverOnePointPTerm, CrossoverPTermDefault);
+    config.add_fallback<float>(CrossoverOnePointPTerm, CrossoverPTermDefault);
     // random
-    config.add_fallback(CrossoverRandomPTerm, CrossoverPTermDefault);
+    config.add_fallback<float>(CrossoverRandomPTerm, CrossoverPTermDefault);
 
     return config;
 }
