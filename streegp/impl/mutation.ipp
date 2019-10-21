@@ -35,7 +35,7 @@ Tree mutate_subtree(
 
 
 template<typename R, typename D>
-Tree mutate_point( Tree tree, float p_term, R& prng, D& value_dist)
+Tree mutate_point(Tree tree, float p_term, R& prng, D& value_dist)
 {
     Environment& env = *tree.env();
     Subtree subtree = random_subtree(tree, prng, p_term);

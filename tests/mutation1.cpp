@@ -58,9 +58,7 @@ int main() {
         max_index += MutationSubtreeNum;
         for (; index < max_index; ++index) {
             pop_next.emplace_back(
-                stree::gp::mutate_subtree(
-                    context,
-                    pop_current[index].tree()));
+                stree::gp::mutate_subtree(context, pop_current[index]));
 
             // Print trees
             std::cout << "Original:          "
@@ -75,9 +73,7 @@ int main() {
         max_index += MutationPointNum;
         for (; index < max_index; ++index) {
             pop_next.emplace_back(
-                stree::gp::mutate_point(
-                    context,
-                    pop_current[index].tree()));
+                stree::gp::mutate_point(context, pop_current[index]));
 
             // Print trees
             std::cout << "Original:          "
@@ -93,9 +89,7 @@ int main() {
         assert(max_index == pop_current.size());
         for (; index < max_index; ++index) {
             pop_next.emplace_back(
-                stree::gp::mutate_hoist(
-                    context,
-                    pop_current[index].tree()));
+                stree::gp::mutate_hoist(context, pop_current[index]));
 
             // Print trees
             std::cout << "Original:          "

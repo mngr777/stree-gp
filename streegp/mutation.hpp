@@ -37,7 +37,7 @@ Tree mutate_subtree(
 }
 
 template<typename C>
-Tree mutate_subtree(C& context, Tree tree) {
+Tree mutate_subtree(C& context, const Tree& tree) {
     const Config& config = context.config;
     return mutate_subtree<C>(
         context,
@@ -45,6 +45,15 @@ Tree mutate_subtree(C& context, Tree tree) {
         config.get<unsigned>(conf::MutationSubtreeDepth),
         config.get<float>(conf::MutationSubtreePTerm),
         config.get<float>(conf::MutationSubtreePTermGrow));
+}
+
+template<typename C>
+typename C::IndividualType mutate_subtree(
+    C& context,
+    const typename C::IndividualType& individual)
+{
+    return typename C::IndividualType(
+        mutate_subtree<C>(context, individual.tree()));
 }
 
 
@@ -71,6 +80,15 @@ Tree mutate_point(C& context, Tree tree) {
         config.get<float>(conf::MutationPointPTerm));
 }
 
+template<typename C>
+typename C::IndividualType mutate_point(
+    C& context,
+    const typename C::IndividualType& individual)
+{
+    return typename C::IndividualType(
+        mutate_point<C>(context, individual.tree()));
+}
+
 
 // Hoist mutation
 
@@ -89,6 +107,15 @@ Tree mutate_hoist(C& context, Tree tree) {
         context,
         tree,
         config.get<float>(conf::MutationHoistPTerm));
+}
+
+template<typename C>
+typename C::IndividualType mutate_hoist(
+    C& context,
+    const typename C::IndividualType& individual)
+{
+    return typename C::IndividualType(
+        mutate_hoist<C>(context, individual.tree()));
 }
 
 }}

@@ -63,22 +63,15 @@ int main() {
         max_index += CrossoverOnePointNum;
         for(; index < max_index; ++index) {
             // Select parents
-            Individual& parent1 = stree::gp::selection_tournament(
-                context,
-                pop_current);
-            Individual& parent2 = stree::gp::selection_tournament(
-                context,
-                pop_current);
+            Individual& parent1 = stree::gp::selection_tournament(context, pop_current);
+            Individual& parent2 = stree::gp::selection_tournament(context, pop_current);
             // Apply one-point crossover
-            stree::Tree child = stree::gp::crossover_one_point(
-                context,
-                parent1.tree(),
-                parent2.tree());
+            Individual child = stree::gp::crossover_one_point(context, parent1, parent2);
 
             // Pring parents and child
             std::cout << "Parent 1: " << parent1.tree() << std::endl;
             std::cout << "Parent 2: " << parent2.tree() << std::endl;
-            std::cout << "Child     " << child << std::endl;
+            std::cout << "Child     " << child.tree() << std::endl;
             std::cout << std::endl;
 
             // Emplace child
@@ -94,22 +87,15 @@ int main() {
         assert(max_index == pop_current.size());
         for(; index < max_index; ++index) {
             // Select parents
-            Individual& parent1 = stree::gp::selection_tournament(
-                context,
-                pop_current);
-            Individual& parent2 = stree::gp::selection_tournament(
-                context,
-                pop_current);
+            Individual& parent1 = stree::gp::selection_tournament(context, pop_current);
+            Individual& parent2 = stree::gp::selection_tournament(context, pop_current);
             // Apply one-point crossover
-            stree::Tree child = stree::gp::crossover_random(
-                context,
-                parent1.tree(),
-                parent2.tree());
+            Individual child = stree::gp::crossover_random(context, parent1, parent2);
 
             // Pring parents and child
             std::cout << "Parent 1: " << parent1.tree() << std::endl;
             std::cout << "Parent 2: " << parent2.tree() << std::endl;
-            std::cout << "Child     " << child << std::endl;
+            std::cout << "Child     " << child.tree() << std::endl;
             std::cout << std::endl;
 
             // Emplace child

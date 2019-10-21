@@ -15,7 +15,7 @@ void _common_region_point_swap(
 template<typename R>
 Tree crossover_one_point(
     Tree tree1,
-    Tree& tree2,
+    const Tree& tree2,
     float p_term,
     R& prng)
 {
@@ -24,7 +24,7 @@ Tree crossover_one_point(
     CommonRegion common = common_region(
         env,
         tree1.root(),
-        tree2.root(),
+        const_cast<Id&>(tree2.root()),
         NodeCompare(env));
     if (common.size() > 0) {
         // Swap subtrees in common region
@@ -53,8 +53,7 @@ Tree crossover_one_point(
 
 template<typename R>
 Tree crossover_random(
-    Tree tree1,
-    Tree& tree2,
+    Tree tree1, const Tree& tree2,
     float p_term,
     R& prng)
 {

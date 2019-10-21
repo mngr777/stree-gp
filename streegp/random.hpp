@@ -19,8 +19,13 @@ public:
 template<typename R>
 bool _cointoss(R& prng, float p);
 
+
+template<typename R>
+const Subtree random_subtree(const Tree& tree, R& prng, float p_term);
+
 template<typename R>
 Subtree random_subtree(Tree& tree, R& prng, float p_term);
+
 
 // NOTE: returns nullptr if value should be generated
 // TODO: refactoring

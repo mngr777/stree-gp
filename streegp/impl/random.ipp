@@ -10,7 +10,7 @@ bool _cointoss(R& prng, float p) {
 }
 
 template<typename R>
-Subtree random_subtree(Tree& tree, R& prng, float p_term) {
+const Subtree random_subtree(const Tree& tree, R& prng, float p_term) {
     assert(tree.is_valid());
     auto desc = tree.describe();
     assert(desc.term_num > 0);
@@ -22,6 +22,12 @@ Subtree random_subtree(Tree& tree, R& prng, float p_term) {
     filter.is_terminal = use_term ? IsTerminalYes : IsTerminalNo;
     return tree.sub(UniformNodeNumDist{0, n_max}(prng), filter);
 }
+
+template<typename R>
+Subtree random_subtree(Tree& tree, R& prng, float p_term) {
+    return random_subtree(const_cast<const Tree&>(tree), prng, p_term);
+}
+
 
 template<typename R, typename D>
 const SymbolPtr random_term(Environment& env, R& prng, D& value_dist) {
