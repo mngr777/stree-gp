@@ -56,6 +56,10 @@ public:
         std::swap(fitness_, other.fitness_);
     }
 
+    Individual copy() const {
+        return Individual(tree_.sub(0).copy());
+    }
+
     Tree& tree() {
         return tree_;
     }

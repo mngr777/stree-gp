@@ -50,8 +50,9 @@ Context<I, R, NoValueDist> make_context(
     const Config& config,
     Environment& env,
     const Evaluator<I>& evaluator,
-    R& prng) {
-    make_context(config, env, evaluator, prng, NoValueDist());
+    R& prng)
+{
+    return make_context(config, env, evaluator, prng, NoValueDist());
 }
 
 }}
