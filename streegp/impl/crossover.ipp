@@ -2,7 +2,7 @@
 
 namespace stree { namespace gp {
 
-void _common_region_point_swap(
+inline void _common_region_point_swap(
     Environment& env, 
     CommonRegion::Item& point)
 {

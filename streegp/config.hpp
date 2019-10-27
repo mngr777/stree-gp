@@ -135,22 +135,10 @@ private:
     };
 
     struct CompareFields {
-        bool operator()(const Field& field1, const Field& field2) {
-            return field1.order < field2.order;
-        }
+        bool operator()(const Field& field1, const Field& field2);
     };
 
-    std::vector<Field> sorted_fields() const {
-        // Get fields
-        std::vector<Field> fields;
-        for (const auto& item : field_map_)
-            fields.push_back(item.second);
-
-        // Sort fields
-        std::sort(fields.begin(), fields.end(), CompareFields());
-
-        return fields;
-    }
+    std::vector<Field> sorted_fields() const;
 
     template<typename V>
     Type get_type() {
@@ -164,26 +152,9 @@ private:
         assert(false);
     }
 
-    void add_or_update_field(const std::string name, Type type, unsigned order) {
-        if (field_map_.count(name) == 0) {
-            // add field
-            Field field(name, type, (order > 0 ? order : order_next()));
-            field_map_.emplace(name, field);
-        } else {
-            // update field
-            Field& field = field_map_.at(name);
-            if (field.type != type)
-                throw std::invalid_argument("Field type doesn't match");
-            if (order != 0)
-                field.order = order;
-        }
-    }
+    void add_or_update_field(const std::string name, Type type, unsigned order);
 
-    Field get_field(const std::string& name) const {
-        if (field_map_.count(name) == 0)
-            throw std::out_of_range(std::string("Field `") + name + "' not found");
-        return field_map_.at(name);
-    }
+    Field get_field(const std::string& name) const;
 
     template<typename V>
     ValueMap<V>& get_map() {
@@ -204,11 +175,7 @@ private:
         return get<V>(actual, actual);
     }
 
-    unsigned order_next() {
-        unsigned result = order_;
-        order_ += order_step_;
-        return result;
-    }
+    unsigned order_next();
 
     unsigned order_;
     unsigned order_step_;

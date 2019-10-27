@@ -40,7 +40,7 @@ Population<I> ramped_half_and_half(
 }
 
 
-void _check_environment(Environment& env) {
+inline void _check_environment(Environment& env) {
     if (env.symbols().terminals().size() == 0) {
         throw std::runtime_error("Cannot generate a tree without terminals");
     }
