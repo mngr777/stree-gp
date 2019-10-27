@@ -38,7 +38,7 @@ int main() {
     env.add_positional("a", 0);
 
     // Context
-    auto config = stree::gp::make_config();
+    auto config = stree::gp::make_default_config();
     auto context = stree::gp::make_context<Individual>(
         config,
         env,

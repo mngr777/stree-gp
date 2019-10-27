@@ -3,6 +3,7 @@
 
 #include <cassert>
 #include <cstdint>
+#include <istream>
 #include <map>
 #include <ostream>
 #include <stdexcept>
@@ -57,7 +58,7 @@ const char CrossoverRandomPTerm[]     = "crossover.random.p_term";
 
 
 class Config;
-Config make_config();
+Config make_default_config();
 
 class Config {
     friend std::ostream& operator<<(std::ostream& os, const Config& config);
@@ -66,15 +67,14 @@ class Config {
     using ValueMap = std::map<const std::string, V>;
 
 public:
-    using PrintFlag = std::uint8_t;
-    const static PrintFlag NoPrintFlags  = 0;
-    const static PrintFlag PrintDefault  = 1;
-    const static PrintFlag PrintActual   = 2;
-
     Config()
         : order_(0),
-          order_step_(5),
-          print_flags_(NoPrintFlags) {}
+          order_step_(5) {}
+
+    template<typename V>
+    void add_field(const std::string& name, unsigned order = 0) {
+        add_or_update_field(name, get_type<V>(),order);
+    }
 
     // NOTE: no circularity check
     template<typename V>
@@ -86,6 +86,7 @@ public:
 
     template<typename V>
     V get(const std::string& name, std::string& actual) const {
+        actual = name;
         const ValueMap<V>& map = get_map<V>();
         return (map.count(name) == 1)
             ? map.at(name)
@@ -98,20 +99,8 @@ public:
         return get<V>(name, actual);
     }
 
-    void print(std::ostream& os, const std::string& name) const {
-        Field field = get_field(name);
-        switch (field.type) {
-            case TypeUnsigned: {
-                print_field<unsigned>(os, name);
-                break;
-            }
-            case TypeFloat: {
-                print_field<float>(os, name);
-                break;
-            }
-            default: assert(false);
-        }
-    }
+    void read(std::istream& is);
+    void write(std::ostream& os) const;
 
     template<typename V>
     void set(const std::string& name, V value, unsigned order = 0) {
@@ -129,18 +118,6 @@ public:
 
     void set_order_step(unsigned order_step) {
         order_step_ = order_step;
-    }
-
-    void set_print_flag(PrintFlag flag) {
-        print_flags_ |= flag;
-    }
-
-    void unset_print_flag(PrintFlag flag) {
-        print_flags_ &= ~flag;
-    }
-
-    bool has_flag(PrintFlag flag) const {
-        return print_flags_ & flag;
     }
 
 private:
@@ -163,17 +140,16 @@ private:
         }
     };
 
-    template<typename V>
-    void print_field(std::ostream& os, const std::string& name) const {
-        std::string actual;
-        V value = get<V>(name, actual);
-        if (has_flag(PrintDefault) || actual.empty()) {
-            // print name
-            os << name << " = " << value;
-            if (has_flag(PrintActual) && !actual.empty())
-                os << " # " << actual;
-            os << std::endl;
-        }
+    std::vector<Field> sorted_fields() const {
+        // Get fields
+        std::vector<Field> fields;
+        for (const auto& item : field_map_)
+            fields.push_back(item.second);
+
+        // Sort fields
+        std::sort(fields.begin(), fields.end(), CompareFields());
+
+        return fields;
     }
 
     template<typename V>
@@ -224,7 +200,7 @@ private:
         if (fallback_map_.count(name) == 0)
             throw std::out_of_range(
                 std::string("Value `") + name + "' not found");
-        actual = fallback_map_.at(name); // use [] ??
+        actual = fallback_map_.at(name);
         return get<V>(actual, actual);
     }
 
@@ -236,7 +212,6 @@ private:
 
     unsigned order_;
     unsigned order_step_;
-    PrintFlag print_flags_;
     std::map<const std::string, Field> field_map_;
     ValueMap<unsigned> map_unsigned_;
     ValueMap<float> map_float_;

@@ -1,23 +1,91 @@
+#include <boost/optional.hpp>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/info_parser.hpp>
+
 namespace stree { namespace gp {
 
 // TODO: use sections
 std::ostream& operator<<(std::ostream& os, const stree::gp::Config& config) {
-    // Get fields
-    std::vector<stree::gp::Config::Field> fields;
-    for (const auto& item : config.field_map_)
-        fields.push_back(item.second);
-
-    // Sort fields
-    std::sort(
-        fields.begin(), fields.end(),
-        typename stree::gp::Config::CompareFields());
-
-    // Print field names and values
-    for (const auto& field : fields) {
-        config.print(os, field.name);
-    }
+    config.write(os);
     return os;
 }
+
+namespace {
+
+template<typename V>
+void copy_from_ptree(
+    Config& config,
+    const boost::property_tree::ptree& ptree,
+    const std::string& name)
+{
+    boost::optional<V> value = ptree.get_optional<V>(name);
+    if (value)
+        config.set<V>(name, *value);
+}
+
+template<typename V>
+void copy_to_ptree(
+    const Config& config,
+    boost::property_tree::ptree& ptree,
+    const std::string& name)
+{
+    std::string actual;
+    V value = config.get<V>(name, actual);
+    if (actual == name)
+        ptree.put<V>(name, value);
+}
+
+} // empty namespace
+
+void Config::read(std::istream& is) {
+    namespace pt = boost::property_tree;
+
+    // Load data into ptree
+    pt::ptree ptree;
+    pt::info_parser::read_info(is, ptree);
+
+    // Read each field value from ptree
+    for (const auto& pair : field_map_) {
+        const auto& name = pair.first;
+        const auto& field  = pair.second;
+        switch (field.type) {
+            case TypeUnsigned: {
+                copy_from_ptree<unsigned>(*this, ptree, name);
+                break;
+            }
+            case TypeFloat: {
+                copy_from_ptree<float>(*this, ptree, name);
+                break;
+            }
+            default: assert(false && "Invalid field type");
+        }
+    }
+}
+
+void Config::write(std::ostream& os) const {
+    namespace pt = boost::property_tree;
+
+    // Copy data to ptree
+    pt::ptree ptree;
+    auto fields = sorted_fields();
+    for (const auto& field : fields) {
+        switch (field.type) {
+            case TypeUnsigned: {
+                copy_to_ptree<unsigned>(*this, ptree, field.name);
+                break;
+            }
+            case TypeFloat: {
+                copy_to_ptree<float>(*this, ptree, field.name);
+                break;
+            }
+            default: assert(false && "Invaid field type");
+        }
+    }
+
+    // Write ptree data
+    pt::info_parser::write_info(os, ptree);
+}
+
 
 template<>
 Config::ValueMap<unsigned>& Config::get_map() {
@@ -40,9 +108,8 @@ const Config::ValueMap<float>& Config::get_map() const {
 }
 
 
-Config make_config() {
+Config make_default_config() {
     using namespace conf;
-    std::string prefix;
 
     Config config;
 
