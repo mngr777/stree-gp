@@ -1,5 +1,4 @@
 #include <stree/stree.hpp>
-#include <iostream>
 
 namespace stree { namespace gp {
 
