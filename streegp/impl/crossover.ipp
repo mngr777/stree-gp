@@ -48,6 +48,7 @@ Tree crossover_one_point(
             }
         }
     }
+    assert(tree1.is_valid());
     return std::move(tree1);
 }
 
@@ -62,6 +63,7 @@ Tree crossover_random(
     Subtree subtree1 = random_subtree(tree1, prng, p_term);
     Subtree subtree2 = random_subtree(tree2, prng, p_term);
     subtree1.replace(subtree2.copy());
+    assert(tree1.is_valid());
     return tree1;
 }
 

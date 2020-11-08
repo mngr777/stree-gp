@@ -18,6 +18,7 @@ Tree mutate_subtree(
     Tree replacement = grow(*tree.env(), depth, p_term_grow, prng, value_dist);
     Subtree subtree = random_subtree(tree, prng, p_term);
     subtree.replace(replacement);
+    assert(tree.is_valid());
     return tree;
 }
 
@@ -47,6 +48,7 @@ Tree mutate_point(Tree tree, float p_term, R& prng, D& value_dist)
         assert(subtree.arity() == 0);
         subtree.set(value_dist(prng));
     }
+    assert(tree.is_valid());
     return tree;
 }
 
@@ -75,6 +77,7 @@ Tree mutate_hoist(Tree tree, float p_term, R& prng) {
         // Swap with initial subtree
         subtree.swap(slice_subtree);
     }
+    assert(tree.is_valid());
     return tree;
 }
 
