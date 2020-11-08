@@ -1,4 +1,5 @@
 #include <stree/stree.hpp>
+#include <iostream>
 
 namespace stree { namespace gp {
 
@@ -19,6 +20,9 @@ Tree crossover_one_point(
     float p_term,
     R& prng)
 {
+    assert(tree1.is_valid());
+    assert(tree2.is_valid());
+
     Environment* env = tree1.env();
     assert(tree2.env() == env);
     CommonRegion common = common_region(
@@ -58,11 +62,16 @@ Tree crossover_random(
     float p_term,
     R& prng)
 {
+    assert(tree1.is_valid());
+    assert(tree2.is_valid());
+
     Environment* env = tree1.env();
     assert(tree2.env() == env);
-    Subtree subtree1 = random_subtree(tree1, prng, p_term);
-    Subtree subtree2 = random_subtree(tree2, prng, p_term);
-    subtree1.replace(subtree2.copy());
+
+    Tree replacement(random_subtree(tree2, prng, p_term).copy());
+    Subtree subtree = random_subtree(tree1, prng, p_term);
+    subtree.replace(replacement);
+
     assert(tree1.is_valid());
     return tree1;
 }
