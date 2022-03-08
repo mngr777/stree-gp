@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <functional>
 #include <cassert>
 
@@ -64,7 +65,7 @@ Group<I> reap(Population<I>& population, unsigned k, Evaluator<I> evaluator) {
     for (; i < population.size(); ++i) {
         Individual& individual = population[i];
         if (more_fit(individual, group.front().get())) {
-            // Replace least fit individual in group
+            // Replace the least fit individual in group
             std::pop_heap(group.begin(), group.end(), &more_fit);
             group.back() = std::ref(individual);
             std::push_heap(group.begin(), group.end(), &more_fit);
@@ -76,6 +77,29 @@ Group<I> reap(Population<I>& population, unsigned k, Evaluator<I> evaluator) {
     sort(group.begin(), group.end(), &more_fit);
 
     return group;
+}
+
+template<typename I>
+void update_hall_of_fame(Population<I>& hof, const Group<I> best, unsigned k) {
+    assert(std::is_heap(hof.begin(), hof.end(), &more_fit));
+    for (auto item : best) {
+        const Individual& individual = item.get();
+        if (hof.size() < k) {
+            // Add individual
+            hof.push_back(individual.copy(true));
+            std::push_heap(hof.begin(), hof.end(), &more_fit);
+        } else if (more_fit(individual, hof.front())) {
+            // Replace the least fit individual
+            std::pop_heap(hof.begin(), hof.end(), &more_fit);
+            hof.back() = individual.copy(true);
+            std::push_heap(hof.begin(), hof.end(), &more_fit);
+        }
+    }
+}
+
+template<typename I>
+void sort_hall_of_fame(Population<I>& hof) {
+    std::sort(hof.begin(), hof.end(), &more_fit);
 }
 
 }}

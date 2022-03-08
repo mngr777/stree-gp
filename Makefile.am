@@ -28,6 +28,7 @@ SOURCE_FILES = $(HEADER_FILES) \
 
 lib_LTLIBRARIES = libstreegp.la
 libstreegp_ladir = $(includedir)
+libstreegp_la_LIBADD = -lstree
 nobase_libstreegp_la_HEADERS = $(HEADER_FILES)
 libstreegp_la_SOURCES = $(SOURCE_FILES)
 

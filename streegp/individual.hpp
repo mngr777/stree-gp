@@ -24,11 +24,8 @@ using Evaluator = std::function<Fitness(I&)>;
 class Individual;
 void swap(Individual& individual1, Individual& individual2);
 
-bool more_fit(Individual& individual1, Individual& individual2);
-bool less_fit(Individual& individual1, Individual& individual2);
-
-
-// TODO: refactoring: 
+bool more_fit(const Individual& individual1, const Individual& individual2);
+bool less_fit(const Individual& individual1, const Individual& individual2);
 
 class Individual {
 public:
@@ -56,8 +53,11 @@ public:
         std::swap(fitness_, other.fitness_);
     }
 
-    Individual copy() const {
-        return Individual(tree_.sub(0).copy());
+    Individual copy(bool copy_fitness = false) const {
+        Individual result(tree_.sub(0).copy());
+        if (copy_fitness)
+            result.fitness_ = fitness_;
+        return result;
     }
 
     Tree& tree() {

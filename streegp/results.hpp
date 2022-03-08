@@ -1,7 +1,6 @@
 #ifndef STREEGP_RESULTS_HPP_
 #define STREEGP_RESULTS_HPP_
 
-#include <algorithm>
 #include <stree/stree.hpp>
 #include <streegp/individual.hpp>
 
@@ -22,6 +21,12 @@ bool is_goal_achieved(
 
 template<typename I>
 Group<I> reap(Population<I>& population, unsigned k, Evaluator<I> evaluate);
+
+template<typename I>
+void update_hall_of_fame(Population<I>& hof, const Group<I> best, unsigned k);
+
+template<typename I>
+void sort_hall_of_fame(Population<I>& hof);
 
 }}
 
