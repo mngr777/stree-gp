@@ -27,14 +27,16 @@ Population<I> ramped_half_and_half(
     P& prng);
 
 template<typename C>
-Population<typename C::IndividualType> ramped_half_and_half(
+void ramped_half_and_half(
     C& context,
+    Population<typename C::IndividualType>& population,
     unsigned size,
     unsigned max_depth,
     float p_term_grow)
 {
     return ramped_half_and_half<typename C::IndividualType, typename C::PrngType, typename C::ValueDistType>(
         context.env,
+        population,
         size,
         max_depth,
         p_term_grow,
@@ -43,10 +45,11 @@ Population<typename C::IndividualType> ramped_half_and_half(
 }
 
 template<typename C>
-Population<typename C::IndividualType> ramped_half_and_half(C& context) {
+void ramped_half_and_half(C& context, Population<typename C::IndividualType>& population) {
     const Config& config = context.config;
     return ramped_half_and_half<C>(
         context,
+        population,
         config.get<unsigned>(conf::PopulationSize),
         config.get<unsigned>(conf::InitRampedMaxDepth),
         config.get<float>(conf::InitRampedPTermGrow));

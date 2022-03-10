@@ -4,39 +4,41 @@
 namespace stree { namespace gp {
 
 template<typename I, typename P, typename D>
-Population<I> ramped_half_and_half(
+void ramped_half_and_half(
     Environment& env,
+    Population<I>& population,
     unsigned size,
     unsigned max_depth,
     float p_term_grow,
     P& prng,
     D& value_dist)
 {
-    Population<I> population;
+    if (population.size() >= size)
+        return;
 
+    unsigned num = size - population.size();
     unsigned i = 0;
     // grow
-    for (; i < size / 2; ++i)
+    for (; i < num / 2; ++i)
         population.emplace_back(
             grow(env, max_depth, p_term_grow, prng, value_dist));
     // full
-    for (; i < size; ++i)
+    for (; i < num; ++i)
         population.emplace_back(
             full(env, max_depth, prng, value_dist));
-
-    return population;
 }
 
 template<typename I, typename P>
-Population<I> ramped_half_and_half(
+void ramped_half_and_half(
     Environment& env,
+    Population<I> population,
     unsigned size,
     unsigned max_depth,
     float p_term_grow,
     P& prng)
 {
     NoValueDist value_dist;
-    return ramped_half_and_half<I>(env, size, max_depth, p_term_grow, prng, value_dist);
+    return ramped_half_and_half<I>(env, population, size, max_depth, p_term_grow, prng, value_dist);
 }
 
 
